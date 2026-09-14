@@ -7,8 +7,8 @@
 
 2. Activate virtual environment
 
-Windows: ```.\venv\Scripts\Activate.ps1```
-MAC: ```source venv/bin/activate```
+Windows: ```.\venv\Scripts\Activate.ps1```  
+Mac: ```source venv/bin/activate```  
 
 3. Install dependencies 
 
