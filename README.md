@@ -1,4 +1,5 @@
 # Gym Logger App (Increment 1)
+Goal: make a working interface that runs locally for 1 person
 
 ## How to Run
 1. Clone repository 
