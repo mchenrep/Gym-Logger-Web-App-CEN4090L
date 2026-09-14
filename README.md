@@ -5,12 +5,17 @@
 
 ```git clone https://github.com/mchenrep/Gym-Logger-Web-App-CEN4090L.git```
 
-2. Install dependencies 
+2. Activate virtual environment
+
+Windows: ```.\venv\Scripts\Activate.ps1```
+MAC: ```source venv/bin/activate```
+
+3. Install dependencies 
 
 ```pip install -r requirements.txt```
 
-3. Run app
+4. Run app
 
 ```python ./app.py```
 
-4. Test your implementations locally, no need for deploying yet. 
+5. Test your implementations locally. Branch for your specific role.
