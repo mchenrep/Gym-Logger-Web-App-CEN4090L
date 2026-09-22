@@ -14,9 +14,9 @@
     <!--No nav bar. Workouts may instead use buttons to confirm the 
     finish / cancellation of workout before returning to index.html -->
     <header>
-        <a href="index.html">Cancel</a>
+        <a href="{{ url_for('home') }}">Cancel</a>
         <span>Workout</span>
-        <a href="index.html">Finish</a>
+        <a href="{{ url_for('home') }}">Finish</a>
     </header>
 
     <main>
@@ -29,6 +29,6 @@
 
     <!--Javascript Files-->
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-
+    
 </body>
 </html>

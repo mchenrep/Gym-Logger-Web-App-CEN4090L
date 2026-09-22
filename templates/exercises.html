@@ -23,20 +23,20 @@
     </main>
 
     <!--Bottom Navigation Bar: Home, Exercises, Stats, Account-->
-    <nav>
-        <a href="index.html">
+    <nav class="bottom-nav">
+        <a href="{{ url_for('home') }}">
             <span>Home</span>
         </a>
         
-        <a href="exercises.html">
+        <a href="{{ url_for('exercises') }}">
             <span>Exercises</span>
         </a>
 
-        <a href="stats.html">
+        <a href="{{ url_for('stats') }}">
             <span>Stats</span>
         </a>
        
-        <a href="account.html">
+        <a href="{{ url_for('account') }}">
             <span>Account</span>
         </a>
     </nav>
