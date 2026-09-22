@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<!-- Workout page: Add / Delete Exercises -->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workout - Gym Logger App</title>
+
+    <!--CSS Files-->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    
+    <!--No nav bar. Workouts may instead use buttons to confirm the 
+    finish / cancellation of workout before returning to index.html -->
+    <header>
+        <a href="index.html">Cancel</a>
+        <span>Workout</span>
+        <a href="index.html">Finish</a>
+    </header>
+
+    <main>
+        <p>This page will display the exercises added to each workout.</p>
+        <!-- 
+            Exercises will be dynamically updated by javascript code 
+            into this main page.
+          -->
+    </main>
+
+    <!--Javascript Files-->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+</body>
+</html>

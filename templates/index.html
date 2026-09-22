@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<!--Index page: Default Page for Users-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - Gym App Logger</title>
+    
+    <!--CSS Files-->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    
+    <!--Main Page-->
+    <main>
+        <div>
+            <h1>Gym App Logger</h1>
+            <p>Track a workout, one exercise at a time.</p>
+        </div>
+
+        <div>
+            <a href="workout.html">Start Workout</a>
+        </div>
+    </main>
+
+    <!--Bottom Navigation Bar: Home, Exercises, Stats, Account-->
+    <nav>
+        <a href="index.html">
+            <span>Home</span>
+        </a>
+        
+        <a href="exercises.html">
+            <span>Exercises</span>
+        </a>
+
+        <a href="stats.html">
+            <span>Stats</span>
+        </a>
+       
+        <a href="account.html">
+            <span>Account</span>
+        </a>
+    </nav>
+
+    <!--Javascript Files-->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+</body>
+</html>

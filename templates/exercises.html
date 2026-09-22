@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<!-- Exercise page: Displays exercises to add to workouts. -->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exercises - Gym App Logger</title>
+
+    <!--CSS Files-->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+
+    <header>
+        <span>Exercises</span>
+    </header>
+
+    <main>
+        <div>
+            <h2>No exercises yet</h2>
+            <p>This page will display the exercises from the overall exercise library.</p>
+        </div>
+    </main>
+
+    <!--Bottom Navigation Bar: Home, Exercises, Stats, Account-->
+    <nav>
+        <a href="index.html">
+            <span>Home</span>
+        </a>
+        
+        <a href="exercises.html">
+            <span>Exercises</span>
+        </a>
+
+        <a href="stats.html">
+            <span>Stats</span>
+        </a>
+       
+        <a href="account.html">
+            <span>Account</span>
+        </a>
+    </nav>
+
+    <!--Javascript Files-->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+</body>
+</html>
