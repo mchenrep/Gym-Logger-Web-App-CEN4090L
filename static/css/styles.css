@@ -4,9 +4,14 @@
     
     --text: #f2f2f3;
     --text-dim: #8a8a90;
-    --nav-border: #29292e;
+
+    --card-bg: #18181b;
+    --card-border: #29292e;
+
     --blue: #1c7cf5;
     --blue-dim: rgba(28, 124, 245, 0.12);
+    --blue-light: rgb(74, 154, 252); 
+    
 }
 
 * {
@@ -37,7 +42,7 @@ nav.side-nav {
   flex-direction: column;
   
   background: var(--nav-bg);
-  border-right: 1px solid var(--nav-border);
+  border-right: 1px solid var(--card-border);
   padding: 20px 0;
 }
 
@@ -141,9 +146,57 @@ nav.side-nav .nav-item.is-current {
   margin: 4px 0 0;
 }
 
-.start-workout-wrap {
+.start-workout-card {
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 10px;
+  padding: 18px 22px;
+  margin: 20px 0px 36px;
+}
+
+.start-workout-link {
+  width: 60px;
+  height: 60px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  border: none;
+
+  background: var(--blue);
+  color: #ffff;
+
+  display: flex;
   align-items: center;
   justify-content: center;
+
+  text-decoration: none;
+  cursor: pointer;
+
+  transition: background-color 0.15s ease;
+  box-shadow: 0 0 25px 10px var(--blue-dim);
+}
+
+.start-workout-link:hover {
+  background: var(--blue-light);
+}
+
+.start-workout-link svg {
+  width: 26px;
+  height: 26px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.start-workout-label {
+  font-weight: 600;
+}
+
+.start-workout-sublabel {
+  margin-top: 2px;
+  color: var(--text-dim);
+  font-size: 0.9rem;
 }
