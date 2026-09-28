@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card">
+    <h1>Workout Tracker + Gym Log</h1>
+    {% if current_user.is_authenticated %}
+        <p>Welcome, {{ current_user.username }}. Pick something to get started:</p>
+        <p>
+            <a class="btn" href="{{ url_for('exercises.library') }}">Exercise Library</a>
+            <a class="btn" href="{{ url_for('workout_templates.list_templates') }}">My Templates</a>
+            <a class="btn" href="{{ url_for('workouts.history') }}">My Workouts</a>
+        </p>
+    {% else %}
+        <p>Track your workouts, build routines, and see your progress.</p>
+        <p>
+            <a class="btn" href="{{ url_for('auth.register') }}">Create an account</a>
+            <a class="btn secondary" href="{{ url_for('auth.login') }}">Log in</a>
+        </p>
+    {% endif %}
+</div>
+{% endblock %}
