@@ -15,9 +15,17 @@ def create_app(test_config=None):
     db.init_app(app)
     login_manager.init_app(app)
 
+    # Each feature lives in its own blueprint (its own folder) so teammates
+    # can work in parallel without editing the same files.
+    from app.auth.routes import auth_bp
+    from app.exercises.routes import exercises_bp
+    from app.workout_templates.routes import workout_templates_bp
+    from app.workouts.routes import workouts_bp
 
-    # *blueprints here*
-
+    app.register_blueprint(auth_bp)
+    app.register_blueprint(exercises_bp)
+    app.register_blueprint(workout_templates_bp)
+    app.register_blueprint(workouts_bp)
 
     @app.route("/")
     def index():
