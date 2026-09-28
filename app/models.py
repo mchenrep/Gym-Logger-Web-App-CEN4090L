@@ -3,6 +3,11 @@ from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from app import db, login_manager
 
+@login_manager.user_loader
+def load_user(user_id):
+    return db.session.get(User, int(user_id))
+
+
 class User(UserMixin, db.Model):
     __tablename__ = "users"
 
@@ -47,8 +52,10 @@ class WorkoutTemplate(db.Model):
         order_by="TemplateExercise.position",
     )
 
+
 class TemplateExercise(db.Model):
     """One exercise inside a template (position = its order in the routine)."""
+    
     __tablename__ = "template_exercises"
 
     id = db.Column(db.Integer, primary_key=True)
@@ -58,3 +65,34 @@ class TemplateExercise(db.Model):
 
     exercise = db.relationship("Exercise")
 
+
+class WorkoutSession(db.Model):
+    """One logged workout. template_id is optional (you can log without a template)."""
+    
+    __tablename__ = "workout_sessions"
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    template_id = db.Column(db.Integer, db.ForeignKey("workout_templates.id"), nullable=True)
+    date = db.Column(db.DateTime, default=datetime.utcnow)
+
+    template = db.relationship("WorkoutTemplate")
+    sets = db.relationship(
+        "SetEntry", backref="session", cascade="all, delete-orphan",
+        order_by="SetEntry.id",
+    )
+
+
+class SetEntry(db.Model):
+    """One set: '135 lbs x 5 reps of Bench Press' inside a session."""
+    
+    __tablename__ = "set_entries"
+
+    id = db.Column(db.Integer, primary_key=True)
+    session_id = db.Column(db.Integer, db.ForeignKey("workout_sessions.id"), nullable=False)
+    exercise_id = db.Column(db.Integer, db.ForeignKey("exercises.id"), nullable=False)
+    set_number = db.Column(db.Integer, nullable=False)
+    weight = db.Column(db.Float, nullable=False)
+    reps = db.Column(db.Integer, nullable=False)
+
+    exercise = db.relationship("Exercise")
