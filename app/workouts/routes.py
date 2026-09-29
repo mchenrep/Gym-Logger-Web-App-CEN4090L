@@ -15,11 +15,6 @@ Hints:
   - Return 403/404 if the session belongs to someone else.
   - Write tests in tests/test_workouts.py.
 """
-from flask import render_template
-from flask_login import login_required, current_user
-from app.workouts import workouts_bp
-from app.models import Workout
-
 from flask import Blueprint, render_template
 from flask_login import login_required, current_user
 
