@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}Exercise Library - Gym Logger{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Exercise Library</h1>
+    <input type="text" id="exerciseSearch" placeholder="Search exercises by name or muscle group..." class="search-bar">
+</div>
+
+<div class="exercise-grid">
+    {% for exercise in exercises %}
+        <div class="card exercise-card">
+            <h3>{{ exercise.name }}</h3>
+            <p style="color: var(--primary-color); font-weight: bold;">{{ exercise.category }}</p>
+            <p>{{ exercise.description or 'No description available.' }}</p>
+        </div>
+    {% else %}
+        <p>No exercises found in database.</p>
+    {% endif %}
+</div>
+{% endblock %}
