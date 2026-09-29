@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}Analytics - Gym Logger{% endblock %}
+
+{% block content %}
+<h1>Workout Statistics</h1>
+
+<div class="stats-grid">
+    <div class="card">
+        <h3>Total Sessions</h3>
+        <p style="font-size: 2rem; font-weight: bold; color: var(--primary-color); margin: 0.5rem 0;">
+            {{ total_workouts }}
+        </p>
+    </div>
+</div>
+{% endblock %}

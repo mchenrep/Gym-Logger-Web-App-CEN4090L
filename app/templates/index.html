@@ -1,20 +1,34 @@
 {% extends "base.html" %}
+
+{% block title %}Dashboard - Gym Logger{% endblock %}
+
 {% block content %}
-<div class="card">
-    <h1>Workout Tracker + Gym Log</h1>
-    {% if current_user.is_authenticated %}
-        <p>Welcome, {{ current_user.username }}. Pick something to get started:</p>
-        <p>
-            <a class="btn" href="{{ url_for('exercises.library') }}">Exercise Library</a>
-            <a class="btn" href="{{ url_for('workout_templates.list_templates') }}">My Templates</a>
-            <a class="btn" href="{{ url_for('workouts.history') }}">My Workouts</a>
-        </p>
-    {% else %}
-        <p>Track your workouts, build routines, and see your progress.</p>
-        <p>
-            <a class="btn" href="{{ url_for('auth.register') }}">Create an account</a>
-            <a class="btn secondary" href="{{ url_for('auth.login') }}">Log in</a>
-        </p>
-    {% endif %}
+<div class="dashboard-header card">
+    <h1>Welcome Back{% if current_user.is_authenticated %}, {{ current_user.username }}{% endif %}!</h1>
+    <p>Track your progress and log today's workout.</p>
+    <div style="margin-top: 1rem;">
+        <a href="{{ url_for('workouts.history') }}" class="btn btn-primary">+ Start Workout</a>
+        <a href="{{ url_for('exercises.library') }}" class="btn btn-secondary">Browse Exercises</a>
+    </div>
+</div>
+
+<div class="dashboard-grid">
+    <section class="card">
+        <h2>Recent Workouts</h2>
+        {% if recent_workouts %}
+            <ul>
+                {% for workout in recent_workouts %}
+                    <li><strong>{{ workout.title }}</strong> - {{ workout.date.strftime('%Y-%m-%d') }}</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No recent activity found.</p>
+        {% endif %}
+    </section>
+
+    <section class="card">
+        <h2>Quick Analytics</h2>
+        <p>Review your progress in the <a href="{{ url_for('workouts.stats') }}">Stats section</a>.</p>
+    </section>
 </div>
 {% endblock %}

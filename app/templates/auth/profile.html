@@ -1,9 +1,15 @@
 {% extends "base.html" %}
-{% block title %}Profile{% endblock %}
+
+{% block title %}Account - Gym Logger{% endblock %}
+
 {% block content %}
-<div class="card">
-    <h2>{{ current_user.username }}</h2>
-    <p>Email: {{ current_user.email }}</p>
-    <p>Member since: {{ current_user.created_at.strftime('%b %d, %Y') }}</p>
+<div class="card" style="max-width: 500px; margin: 0 auto;">
+    <h1>Account Details</h1>
+    <hr style="border: none; border-top: 1px solid var(--border-color); margin: 1rem 0;">
+    <p><strong>Username:</strong> {{ current_user.username }}</p>
+    <p><strong>Email:</strong> {{ current_user.email }}</p>
+    <div style="margin-top: 1.5rem;">
+        <a href="{{ url_for('auth.logout') }}" class="btn btn-secondary">Sign Out</a>
+    </div>
 </div>
 {% endblock %}
