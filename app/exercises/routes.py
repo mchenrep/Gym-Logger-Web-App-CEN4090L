@@ -22,5 +22,5 @@ exercises_bp = Blueprint("exercises", __name__, url_prefix="/exercises")
 @exercises_bp.route("/")
 @login_required
 def library():
-    exercises = []  # TODO: replace with a real query (see step 1 above)
+    exercises = Exercise.query.order_by(Exercise.name).all()
     return render_template("exercises/library.html", exercises=exercises)
