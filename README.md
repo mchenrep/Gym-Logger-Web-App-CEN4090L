@@ -42,7 +42,7 @@ Copy each row into a GitHub issue before you start coding on it.
 | Task | File(s) | Owner |
 |---|---|---|
 | Exercise list page (query the DB) | `app/exercises/routes.py`, `templates/exercises/library.html` | mmot725 |
-| Exercise search / filter | same as above | |
+| Exercise search / filter | same as above | mmot725 |
 | Create a workout template | `app/workout_templates/routes.py` + new `new.html` | |
 | View / delete a template | same as above | |
 | Start a workout (optionally from a template) | `app/workouts/routes.py` + new templates | |
