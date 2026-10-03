@@ -12,12 +12,38 @@
             name="q"
             value="{{ q }}"
             placeholder="Search exercises by name..." 
-            class="search-bar"
+            class="search-bar",
+            style="width: 200px;"
         >
 
-        <button type="submit">Search</button>
+        <select name="category">
+            <option value="">All Categories</option>
+                {% for category in categories %}
+                    <option
+                        value="{{ category }}"
+                        {% if category == selected_category %}selected{% endif %}
+                    >
+                        {{ category }}
+                    </option>
+                {% endfor %}
+        </select>
 
-        {% if q %}
+        <select name="muscle_group">
+            <option value="">All Muscle Groups</option>
+
+            {% for muscle_group in muscle_groups %}
+                <option
+                    value="{{ muscle_group }}"
+                    {% if muscle_group == selected_muscle_group %}selected{% endif %}
+                >
+                    {{ muscle_group }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <button type="submit">Apply</button>
+
+        {% if q or selected_category or selected_muscle_group %}
             <a href="{{ url_for('exercises.library') }}">Clear</a>
         {% endif %}
     </form>
