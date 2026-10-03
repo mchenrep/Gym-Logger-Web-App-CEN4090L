@@ -12,11 +12,12 @@
     {% for exercise in exercises %}
         <div class="card exercise-card">
             <h3>{{ exercise.name }}</h3>
-            <p style="color: var(--primary-color); font-weight: bold;">{{ exercise.category }}</p>
-            <p>{{ exercise.description or 'No description available.' }}</p>
+            <p><strong>Category:</strong> {{ exercise.category }}</p>
+            <p><strong>Muscle group:</strong> {{ exercise.muscle_group }}</p>
+            <p><strong>Description:</strong> {{ exercise.description or 'No description available.' }}</p>
         </div>
     {% else %}
         <p>No exercises found in database.</p>
-    {% endif %}
+    {% endfor %}
 </div>
 {% endblock %}
