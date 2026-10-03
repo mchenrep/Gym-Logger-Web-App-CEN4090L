@@ -5,7 +5,22 @@
 {% block content %}
 <div class="page-header">
     <h1>Exercise Library</h1>
-    <input type="text" id="exerciseSearch" placeholder="Search exercises by name or muscle group..." class="search-bar">
+    <form method="GET" action="{{ url_for('exercises.library') }}">
+        <input 
+            type="text" 
+            id="exerciseSearch"
+            name="q"
+            value="{{ q }}"
+            placeholder="Search exercises by name..." 
+            class="search-bar"
+        >
+
+        <button type="submit">Search</button>
+
+        {% if q %}
+            <a href="{{ url_for('exercises.library') }}">Clear</a>
+        {% endif %}
+    </form>
 </div>
 
 <div class="exercise-grid">
