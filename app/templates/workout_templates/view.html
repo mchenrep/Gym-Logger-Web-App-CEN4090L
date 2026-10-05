@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}{{ template.name }} - Gym Logger{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h1>{{ template.name }}</h1>
+    <ol>
+        {% for item in template.exercises %}
+            <li><strong>{{ item.exercise.name }}</strong> - {{ item.exercise.category }}, {{ item.exercise.muscle_group }}</li>
+        {% endfor %}
+    </ol>
+
+    <div style="margin-top: 1.5rem;">
+        <form method="POST" action="{{ url_for('workouts.new_workout') }}" style="display: inline;">
+            <input type="hidden" name="template_id" value="{{ template.id }}">
+            <button type="submit" class="btn btn-primary">Start this workout</button>
+        </form>
+        <form method="POST" action="{{ url_for('workout_templates.delete_template', template_id=template.id) }}" style="display: inline;"
+              onsubmit="return confirm('Delete this template? Workouts you already logged with it will be kept.');">
+            <button type="submit" class="btn btn-secondary">Delete template</button>
+        </form>
+    </div>
+    <p><a href="{{ url_for('workout_templates.list_templates') }}">Back to my templates</a></p>
+</div>
+{% endblock %}
