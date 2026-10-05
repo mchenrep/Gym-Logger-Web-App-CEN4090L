@@ -134,5 +134,77 @@ def add_set(workout_id):
 @workouts_bp.route('/stats')
 @login_required
 def stats():
-    total_workouts = WorkoutSession.query.filter_by(user_id=current_user.id).count()
-    return render_template('workouts/stats.html', total_workouts=total_workouts)
+    # all of this user's sessions, oldest first (so "last" = most recent)
+    sessions = (
+        WorkoutSession.query.filter_by(user_id=current_user.id)
+        .order_by(WorkoutSession.date.asc(), WorkoutSession.id.asc())
+        .all()
+    )
+    total_workouts = len(sessions)
+ 
+    # ---- total volume lifted (sum of weight * reps across every set ever) ----
+    total_volume = (
+        db.session.query(func.coalesce(func.sum(SetEntry.weight * SetEntry.reps), 0))
+        .join(WorkoutSession, SetEntry.session_id == WorkoutSession.id)
+        .filter(WorkoutSession.user_id == current_user.id)
+        .scalar()
+    )
+ 
+    # ---- personal records: heaviest single set ever logged, per exercise ----
+    pr_rows = (
+        db.session.query(Exercise.name, func.max(SetEntry.weight))
+        .join(SetEntry, SetEntry.exercise_id == Exercise.id)
+        .join(WorkoutSession, SetEntry.session_id == WorkoutSession.id)
+        .filter(WorkoutSession.user_id == current_user.id)
+        .group_by(Exercise.name)
+        .order_by(Exercise.name)
+        .all()
+    )
+    personal_records = [{"exercise": name, "weight": weight} for name, weight in pr_rows]
+ 
+    # ---- volume trend: most recent session vs. the average of every session before it ----
+    trend = None
+    new_prs_this_session = []
+    if sessions:
+        volumes = [sum(s.weight * s.reps for s in session.sets) for session in sessions]
+        last_session, last_volume = sessions[-1], volumes[-1]
+        prior_volumes = volumes[:-1]
+ 
+        if prior_volumes:
+            avg_prior_volume = sum(prior_volumes) / len(prior_volumes)
+            pct_change = (
+                round((last_volume - avg_prior_volume) / avg_prior_volume * 100, 1)
+                if avg_prior_volume > 0 else None
+            )
+            trend = {
+                "last_volume": last_volume,
+                "avg_prior_volume": round(avg_prior_volume, 1),
+                "pct_change": pct_change,
+            }
+ 
+        # did the most recent session set a new PR on any exercise?
+        for set_entry in last_session.sets:
+            prior_best = (
+                db.session.query(func.max(SetEntry.weight))
+                .join(WorkoutSession, SetEntry.session_id == WorkoutSession.id)
+                .filter(
+                    WorkoutSession.user_id == current_user.id,
+                    SetEntry.exercise_id == set_entry.exercise_id,
+                    WorkoutSession.id != last_session.id,
+                )
+                .scalar()
+            )
+            if prior_best is None or set_entry.weight > prior_best:
+                new_prs_this_session.append(
+                    {"exercise": set_entry.exercise.name, "weight": set_entry.weight}
+                )
+ 
+    return render_template(
+        "workouts/stats.html",
+        total_workouts=total_workouts,
+        total_volume=total_volume,
+        personal_records=personal_records,
+        trend=trend,
+        new_prs_this_session=new_prs_this_session,
+    )
+ 
