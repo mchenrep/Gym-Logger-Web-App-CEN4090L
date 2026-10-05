@@ -26,9 +26,9 @@ Each feature has its own folder, so we can all work at once without stepping on 
 | Folder | What it does | Status |
 |---|---|---|
 | `app/auth/` | register, login, logout, profile | DONE |
-| `app/models.py` | all database tables | DONE (talk to the team before changing) |
+| `app/models.py` | all database tables | DONE |
 | `app/templates/base.html` | shared layout + nav bar | DONE |
-| `app/exercises/` | exercise library page | TODO |
+| `app/exercises/` | exercise library page | DONE |
 | `app/workout_templates/` | create/view/delete workout templates | TODO |
 | `app/workouts/` | log a workout + workout history | TODO |
 
@@ -43,12 +43,12 @@ Copy each row into a GitHub issue before you start coding on it.
 |---|---|---|
 | Exercise list page (query the DB) | `app/exercises/routes.py`, `templates/exercises/library.html` | mmot725 |
 | Exercise search / filter | same as above | mmot725 |
-| Create a workout template | `app/workout_templates/routes.py` + new `new.html` | |
-| View / delete a template | same as above | |
-| Start a workout (optionally from a template) | `app/workouts/routes.py` + new templates | |
-| Log sets (exercise, weight, reps) | same as above | |
-| Workout history + detail page | same as above | |
-| Tests for your feature | `tests/test_<feature>.py` (copy the style of `tests/test_auth.py`) | |
+| Create a workout template | `app/workout_templates/routes.py` + new `new.html` | oazali |
+| View / delete a template | same as above | oazali |
+| Start a workout (optionally from a template) | `app/workouts/routes.py` + new templates | jseib-ai |
+| Log sets (exercise, weight, reps) | same as above | jseib-ai |
+| Workout history + detail page | same as above | jseib-ai |
+| Tests for your feature | `tests/test_<feature>.py` (copy the style of `tests/test_auth.py`) | H-J-M-23 |
 
 ## Git workflow
 
