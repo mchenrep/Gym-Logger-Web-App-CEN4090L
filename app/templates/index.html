@@ -7,7 +7,7 @@
     <h1>Welcome Back{% if current_user.is_authenticated %}, {{ current_user.username }}{% endif %}!</h1>
     <p>Track your progress and log today's workout.</p>
     <div style="margin-top: 1rem;">
-        <a href="{{ url_for('workouts.history') }}" class="btn btn-primary">+ Start Workout</a>
+        <a href="{{ url_for('workouts.new_workout') }}" class="btn btn-primary">+ Start Workout</a>
         <a href="{{ url_for('exercises.library') }}" class="btn btn-secondary">Browse Exercises</a>
     </div>
 </div>

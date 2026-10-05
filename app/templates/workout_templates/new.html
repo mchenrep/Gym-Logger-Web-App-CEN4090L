@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}New Template - Gym Logger{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>Create a workout template</h2>
+    <form method="POST" class="stacked-form">
+        <label>Template name <input type="text" name="name" value="{{ name }}" maxlength="120" placeholder="e.g. Push Day" required></label>
+
+        <fieldset>
+            <legend>Exercises</legend>
+            {% for exercise in exercises %}
+                <label>
+                    <input type="checkbox" name="exercise_ids" value="{{ exercise.id }}" {% if exercise.id in selected_ids %}checked{% endif %}>
+                    {{ exercise.name }} ({{ exercise.muscle_group }})
+                </label>
+            {% else %}
+                <p>No exercises found in database. Run <code>python seed.py</code> first.</p>
+            {% endfor %}
+        </fieldset>
+
+        <button type="submit">Create template</button>
+    </form>
+    <p><a href="{{ url_for('workout_templates.list_templates') }}">Back to my templates</a></p>
+</div>
+{% endblock %}

@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}Workout - Gym Logger{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>{{ workout.template.name if workout.template else 'Workout' }}</h1>
+    <p>{{ workout.date.strftime('%Y-%m-%d') }}</p>
+</div>
+
+{% if template_exercises %}
+    <section class="card">
+        <h2>Checklist</h2>
+        <ul>
+            {% for item in template_exercises %}
+                <li>
+                    {% if item.exercise_id in done_ids %}&#10003; <s>{{ item.exercise.name }}</s>
+                    {% else %}&#9744; {{ item.exercise.name }}{% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    </section>
+{% endif %}
+
+<section class="card">
+    <h2>Log a set</h2>
+    <form method="POST" action="{{ url_for('workouts.add_set', workout_id=workout.id) }}" class="stacked-form">
+        <label>Exercise
+            <select name="exercise_id" required>
+                {% for exercise in exercises %}
+                    <option value="{{ exercise.id }}" {% if exercise.id == default_exercise_id %}selected{% endif %}>{{ exercise.name }}</option>
+                {% endfor %}
+            </select>
+        </label>
+        <label>Weight (lbs) <input type="number" name="weight" min="0" step="any" value="{{ '%g'|format(last_set.weight) if last_set else '' }}" required></label>
+        <label>Reps <input type="number" name="reps" min="1" step="1" value="{{ last_set.reps if last_set else '' }}" required></label>
+        <button type="submit">Add set</button>
+    </form>
+</section>
+
+<section class="card">
+    <h2>Sets</h2>
+    {% for exercise, sets in sets_by_exercise.items() %}
+        <h3>{{ exercise.name }}</h3>
+        <table>
+            <thead>
+                <tr><th>Set</th><th>Weight (lbs)</th><th>Reps</th></tr>
+            </thead>
+            <tbody>
+                {% for set_entry in sets %}
+                    <tr><td>{{ set_entry.set_number }}</td><td>{{ '%g'|format(set_entry.weight) }}</td><td>{{ set_entry.reps }}</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No sets logged yet.</p>
+    {% endfor %}
+</section>
+
+<p><a href="{{ url_for('workouts.history') }}">Back to workout history</a></p>
+{% endblock %}

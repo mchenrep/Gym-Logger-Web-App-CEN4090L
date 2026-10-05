@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}My Templates - Gym Logger{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>My Templates</h1>
+    <p>Reusable routines you can start a workout from.</p>
+    <div style="margin-top: 1rem;">
+        <a href="{{ url_for('workout_templates.new_template') }}" class="btn btn-primary">+ New Template</a>
+    </div>
+</div>
+
+{% for template in templates %}
+    <div class="card">
+        <h3><a href="{{ url_for('workout_templates.view_template', template_id=template.id) }}">{{ template.name }}</a></h3>
+        <p><strong>Exercises:</strong> {{ template.exercises|map(attribute='exercise.name')|join(', ') }}</p>
+    </div>
+{% else %}
+    <p>You don't have any templates yet. <a href="{{ url_for('workout_templates.new_template') }}">Create your first one</a>.</p>
+{% endfor %}
+{% endblock %}
