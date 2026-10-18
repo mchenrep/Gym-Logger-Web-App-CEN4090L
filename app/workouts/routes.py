@@ -1,20 +1,3 @@
-"""WORKOUT LOGGING  --  TODO: owner ________
-
-Goal: log a workout (sets of weight x reps) and see past workouts.
-
-Routes to build (all @login_required, only the current user's data):
-  - GET  /workouts/           history: list my past sessions, newest first   (stub below)
-  - GET/POST /workouts/new    start a session (optionally pick one of my templates)
-  - GET  /workouts/<id>       view a session and its sets
-  - POST /workouts/<id>/sets  add a set: exercise_id, weight, reps
-                              (set_number = number of existing sets for that exercise + 1)
-
-Hints:
-  - Create a WorkoutSession(user_id=current_user.id), db.session.add(...), db.session.commit().
-  - If a template was chosen, you can show its exercises as a checklist on the session page.
-  - Return 403/404 if the session belongs to someone else.
-  - Write tests in tests/test_workouts.py.
-"""
 import math
 
 from flask import Blueprint, render_template, request, redirect, url_for, flash
