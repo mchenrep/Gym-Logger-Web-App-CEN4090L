@@ -1,6 +1,6 @@
 from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager
+from flask_login import LoginManager, current_user
 
 db = SQLAlchemy()
 login_manager = LoginManager()
@@ -29,7 +29,18 @@ def create_app(test_config=None):
 
     @app.route("/")
     def index():
-        return render_template("index.html")
+        # Dashboard: the logged-in user's 5 most recent workouts (empty for visitors).
+        from app.models import WorkoutSession
+
+        recent_workouts = []
+        if current_user.is_authenticated:
+            recent_workouts = (
+                WorkoutSession.query.filter_by(user_id=current_user.id)
+                .order_by(WorkoutSession.date.desc(), WorkoutSession.id.desc())
+                .limit(5)
+                .all()
+            )
+        return render_template("index.html", recent_workouts=recent_workouts)
 
     # Custom error pages
     def render_error(code, title, message):
