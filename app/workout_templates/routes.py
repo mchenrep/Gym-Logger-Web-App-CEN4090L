@@ -1,21 +1,13 @@
-"""WORKOUT TEMPLATES  --  TODO: owner ________
-
-Goal: users can create reusable routines (e.g. "Push Day") made of exercises.
-
-Routes to build (all should be @login_required and only touch current_user's data):
-  - GET  /templates/          list my templates                (stub below)
-  - GET/POST /templates/new   form: name + pick exercises -> create WorkoutTemplate
-                              and one TemplateExercise per chosen exercise
-  - GET  /templates/<id>      view one template and its exercises
-  - POST /templates/<id>/delete   delete a template
-
-Hints:
-  - current_user.templates gives you the logged-in user's templates.
-  - Get the chosen exercises from a multi-select with request.form.getlist("exercise_ids").
-  - Return 404 (abort(404)) if the template isn't found or isn't the user's.
-  - Write tests in tests/test_workout_templates.py.
 """
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+INCREMENT 2 (owner: Richard) - the two stub routes at the bottom of this file:
+  - GET/POST /templates/<id>/edit       rename + add/remove/reorder exercises
+  - POST     /templates/<id>/duplicate  copy a template (name it "<name> (copy)")
+  Also: add Edit / Duplicate buttons to workout_templates/view.html (and list.html),
+  and add data-confirm="Delete this template?" to the delete form
+  (static/js/main.js already shows the browser confirm for it).
+  Tests live in tests/test_template_edit.py (Hector).
+"""
+from flask import Blueprint, render_template, request, redirect, url_for, flash, abort
 from flask_login import login_required, current_user
 
 from app import db
@@ -100,3 +92,30 @@ def delete_template(template_id):
 
     flash(f'Template "{name}" deleted.', "info")
     return redirect(url_for("workout_templates.list_templates"))
+
+
+@workout_templates_bp.route("/<int:template_id>/edit", methods=["GET", "POST"])
+@login_required
+def edit_template(template_id):
+    # STUB (Increment 2, Richard). Ownership check is done for you; delete the abort(501) when you start.
+    template = WorkoutTemplate.query.filter_by(id=template_id, user_id=current_user.id).first_or_404()  # noqa: F841
+    # TODO 1: GET  -> render workout_templates/edit.html (copy new.html) pre-filled with the template's
+    #                 name and current exercise ids (see how new_template() passes selected_ids).
+    # TODO 2: POST -> reuse the same validation as new_template(), BUT allow keeping the template's
+    #                 own name (only reject a name used by a *different* template of this user).
+    # TODO 3: update template.name, then rebuild template.exercises with positions in the new order
+    #         (clearing the list is fine: delete-orphan removes the old TemplateExercise rows).
+    # TODO 4: flash a success message and redirect to view_template.
+    abort(501)
+
+
+@workout_templates_bp.route("/<int:template_id>/duplicate", methods=["POST"])
+@login_required
+def duplicate_template(template_id):
+    # STUB (Increment 2, Richard).
+    template = WorkoutTemplate.query.filter_by(id=template_id, user_id=current_user.id).first_or_404()  # noqa: F841
+    # TODO 1: pick a free name: "<name> (copy)", then "<name> (copy 2)", ... (names are unique per user).
+    # TODO 2: create a new WorkoutTemplate for current_user with a TemplateExercise per original
+    #         exercise, keeping the same positions. Do NOT copy workout sessions.
+    # TODO 3: flash success and redirect to the new template's page.
+    abort(501)

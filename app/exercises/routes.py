@@ -1,20 +1,19 @@
-"""EXERCISE LIBRARY  --  TODO: owner ________
-
-Goal: a page that lists the seeded exercises (name, category, muscle group).
-
-Steps:
-  1. In library(), query the exercises:
-         exercises = Exercise.query.order_by(Exercise.name).all()
-     and pass them to the template (template already loops over `exercises`).
-  2. Add a search box: read request.args.get("q") and filter with
-         Exercise.query.filter(Exercise.name.ilike(f"%{q}%"))
-  3. (Nice to have) filter by category / muscle group with a dropdown.
-  4. Write tests in tests/test_exercises.py.
 """
-from flask import Blueprint, render_template, request
+INCREMENT 2 (owner: Mawi):
+  - detail() below is a bare-bones stub: it shows name / category / muscle group.
+    TODO: link to it from each card in library.html, then show THIS user's history
+    for the exercise (best set, recent sets) using analytics.exercise_history()
+    from app/workouts/analytics.py once John has built it.
+  - TODO: library.html uses `exercise.description`, but the Exercise model has no such
+    column. Either drop it from the template or add the column (tell the team first:
+    it needs a database reset).
+  - Tests live in tests/test_exercise_detail.py (Hector).
+"""
+from flask import Blueprint, render_template, request, abort
 from flask_login import login_required
 
-from app.models import Exercise  # noqa: F401  (you'll need this)
+from app import db
+from app.models import Exercise
 
 exercises_bp = Blueprint("exercises", __name__, url_prefix="/exercises")
 
@@ -78,3 +77,12 @@ def library():
         selected_category=category,
         selected_muscle_group=muscle_group
     )
+
+@exercises_bp.route("/<int:exercise_id>")
+@login_required
+def detail(exercise_id):
+    # STUB (Increment 2, Mawi): see the module docstring for the TODO list.
+    exercise = db.session.get(Exercise, exercise_id)
+    if exercise is None:
+        abort(404)
+    return render_template("exercises/detail.html", exercise=exercise)
