@@ -83,3 +83,19 @@ def logout():
 @login_required
 def profile():
     return render_template("auth/profile.html")
+
+@auth_bp.route("/profile/edit", methods=["POST"])
+@login_required
+def edit_profile():
+    return redirect(url_for(""))
+
+@auth_bp.route("/profile/password", methods=["POST"])
+@login_required
+def change_password():
+    return redirect(url_for(""))
+
+
+@auth_bp.route("/profile/delete", methods=["POST"])
+@login_required
+def delete_account():
+    return redirect(url_for(""))
