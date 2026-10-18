@@ -31,6 +31,28 @@ def create_app(test_config=None):
     def index():
         return render_template("index.html")
 
+    # Custom error pages
+    def render_error(code, title, message):
+        return render_template("errors/error.html", code=code, title=title, message=message), code
+
+    @app.errorhandler(403)
+    def forbidden(_error):
+        return render_error(403, "Access denied", "You don't have permission to view this page.")
+
+    @app.errorhandler(404)
+    def not_found(_error):
+        return render_error(404, "Page not found", "That page doesn't exist, or it isn't yours to view.")
+
+    @app.errorhandler(501)
+    def not_implemented(_error):
+        # Increment 2 stub routes abort(501) until their owner builds them.
+        return render_error(501, "Coming soon", "This feature hasn't been built yet.")
+
+    @app.errorhandler(500)
+    def server_error(_error):
+        db.session.rollback()  # leave the database session clean after a failed request
+        return render_error(500, "Something went wrong", "An unexpected error occurred. Please try again.")
+
     # Create any missing tables on startup (no migrations needed for this project).
     # NOTE: if you change a model's columns, delete workout.db and restart.
     with app.app_context():

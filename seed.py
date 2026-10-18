@@ -6,6 +6,15 @@
 from app import create_app, db
 from app.models import Exercise
 
+# INCREMENT 2 (owner: John) - TODO:
+#   1. Grow this list to ~40-50 exercises covering every muscle group (Chest, Back, Shoulders,
+#      Biceps, Triceps, Legs, Core, Glutes, Calves, Full Body) and every category (Barbell,
+#      Dumbbell, Cable, Machine, Bodyweight, Cardio).
+#   2. Fix a data bug: "Lat Pulldown" is filed under "Dumbbell" - it's a Cable/Machine exercise.
+#   3. The loop at the bottom skips existing names, so fixes to existing rows never apply to a
+#      database that was already seeded. Make it UPDATE category/muscle_group when the name exists.
+#   4. Keep category / muscle group spelling consistent (they feed the library dropdown filters).
+#   5. Keep it safe to run more than once. Tests: tests/test_seed.py (Hector).
 EXERCISES = [
     # (name, category, muscle_group)
     ("Barbell Back Squat", "Barbell", "Legs"),

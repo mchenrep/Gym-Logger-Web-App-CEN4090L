@@ -35,21 +35,6 @@ Each feature has its own folder, so we can all work at once without stepping on 
 Open your feature's `routes.py`: the top of the file explains exactly what to build.
 Every page already loads, so you can start from a working app.
 
-## Team task list
-
-Copy each row into a GitHub issue before you start coding on it.
-
-| Task | File(s) | Owner |
-|---|---|---|
-| Exercise list page (query the DB) | `app/exercises/routes.py`, `templates/exercises/library.html` | mmot725 |
-| Exercise search / filter | same as above | mmot725 |
-| Create a workout template | `app/workout_templates/routes.py` + new `new.html` | oazali |
-| View / delete a template | same as above | oazali |
-| Start a workout (optionally from a template) | `app/workouts/routes.py` + new templates | jseib-ai |
-| Log sets (exercise, weight, reps) | same as above | jseib-ai |
-| Workout history + detail page | same as above | jseib-ai |
-| Tests for your feature | `tests/test_<feature>.py` (copy the style of `tests/test_auth.py`) | H-J-M-23 |
-
 ## Git workflow
 
 1. Make an issue for the task.
@@ -59,3 +44,9 @@ Copy each row into a GitHub issue before you start coding on it.
 
 Each feature lives in its own folder, so merge conflicts should be rare.
 The shared files (`models.py`, `base.html`, `app/__init__.py`) need a heads-up in the group chat before editing.
+
+## Shared UI helpers
+
+- Add `data-confirm="Are you sure?"` to any `<form>` and the browser will ask before submitting it (handled in `static/js/main.js`).
+- Page styles live in `static/css/styles.css` (cards, buttons, forms, tables, alerts, grids). Reuse those classes instead of inline styles.
+- Flash messages: `flash("text", "success" | "danger" | "info")`. Success/info fade out automatically.
