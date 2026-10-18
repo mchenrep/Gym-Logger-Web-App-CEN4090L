@@ -12,17 +12,25 @@
     </div>
 </div>
 
+{% if current_user.is_authenticated %}
 <div class="dashboard-grid">
     <section class="card">
         <h2>Recent Workouts</h2>
         {% if recent_workouts %}
             <ul>
                 {% for workout in recent_workouts %}
-                    <li><strong>{{ workout.title }}</strong> - {{ workout.date.strftime('%Y-%m-%d') }}</li>
+                    <li>
+                        <a href="{{ url_for('workouts.view_workout', workout_id=workout.id) }}">
+                            <strong>{{ workout.template.name if workout.template else 'Freestyle workout' }}</strong>
+                        </a>
+                        - {{ workout.date.strftime('%Y-%m-%d') }}
+                        ({{ workout.sets|length }} set{{ '' if workout.sets|length == 1 else 's' }})
+                    </li>
                 {% endfor %}
             </ul>
+            <p><a href="{{ url_for('workouts.history') }}">View full history</a></p>
         {% else %}
-            <p>No recent activity found.</p>
+            <p>No workouts yet. Start your first one above!</p>
         {% endif %}
     </section>
 
@@ -31,4 +39,5 @@
         <p>Review your progress in the <a href="{{ url_for('workouts.stats') }}">Stats section</a>.</p>
     </section>
 </div>
+{% endif %}
 {% endblock %}
