@@ -1,20 +1,12 @@
-"""WORKOUT LOGGING  --  TODO: owner ________
-
-Goal: log a workout (sets of weight x reps) and see past workouts.
-
-Routes to build (all @login_required, only the current user's data):
-  - GET  /workouts/           history: list my past sessions, newest first   (stub below)
-  - GET/POST /workouts/new    start a session (optionally pick one of my templates)
-  - GET  /workouts/<id>       view a session and its sets
-  - POST /workouts/<id>/sets  add a set: exercise_id, weight, reps
-                              (set_number = number of existing sets for that exercise + 1)
-
-Hints:
-  - Create a WorkoutSession(user_id=current_user.id), db.session.add(...), db.session.commit().
-  - If a template was chosen, you can show its exercises as a checklist on the session page.
-  - Return 403/404 if the session belongs to someone else.
-  - Write tests in tests/test_workouts.py.
 """
+INCREMENT 2 (owner: John) - richer statistics ("EDA"):
+  - Put the number crunching in app/workouts/analytics.py (function stubs are there), keep
+    stats() below thin: call the helpers and pass the results to workouts/stats.html.
+  - The same helpers get reused by the dashboard (Matthew) and exercise detail page (Mawi),
+    so keep their signatures stable and make them take a user_id.
+  UNASSIGNED (stretch): delete a workout / delete a set. See GITHUB_ISSUES.md.
+"""
+
 import math
 
 from flask import Blueprint, render_template, request, redirect, url_for, flash
@@ -135,4 +127,7 @@ def add_set(workout_id):
 @login_required
 def stats():
     total_workouts = WorkoutSession.query.filter_by(user_id=current_user.id).count()
+    # TODO (John): replace the line above with analytics helpers, e.g.
+    #   total_volume, personal_records, workouts_per_week, sets_by_muscle_group, volume_per_workout
+    # and pass them to the template.
     return render_template('workouts/stats.html', total_workouts=total_workouts)
