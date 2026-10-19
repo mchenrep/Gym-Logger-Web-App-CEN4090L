@@ -87,7 +87,32 @@ def profile():
 @auth_bp.route("/profile/edit", methods=["POST"])
 @login_required
 def edit_profile():
-    return redirect(url_for(""))
+    username = request.form.get("username", "").strip()
+    email = request.form.get("email", "").strip().lower()
+
+    # input validation (a user may keep their own username/email, so exclude themselves from the duplicate checks)
+    error = None
+    if not username or not email:
+        error = "Username and email are required."
+    elif len(username) > 80:
+        error = "Username must be 80 characters or less."
+    elif "@" not in email:
+        error = "Please enter a valid email."
+    elif User.query.filter(User.username == username, User.id != current_user.id).first():
+        error = "That username is already taken."
+    elif User.query.filter(User.email == email, User.id != current_user.id).first():
+        error = "That email is already registered."
+
+    if error:
+        flash(error, "danger")
+        return redirect(url_for("auth.profile"))
+
+    current_user.username = username
+    current_user.email = email
+    db.session.commit()
+
+    flash("Profile updated.", "success") 
+    return redirect(url_for("auth.profile"))
 
 @auth_bp.route("/profile/password", methods=["POST"])
 @login_required
