@@ -117,10 +117,43 @@ def edit_profile():
 @auth_bp.route("/profile/password", methods=["POST"])
 @login_required
 def change_password():
-    return redirect(url_for(""))
+    current = request.form.get("current_password", "")
+    new = request.form.get("new_password", "")
+    confirm = request.form.get("confirm_password", "")
+
+    error = None
+    if not current_user.check_password(current):
+        error = "Your current password is incorrect."
+    elif len(new) < 8:
+        error = "New password must be at least 8 characters."
+    elif new != confirm:
+        error = "New passwords do not match."
+    elif new == current:
+        error = "New password must be different from your current one."
+
+    if error:
+        flash(error, "danger")
+        return redirect(url_for("auth.profile"))
+
+    current_user.set_password(new)
+    db.session.commit()
+
+    flash("Password changed.", "success")
+    return redirect(url_for("auth.profile"))
 
 
 @auth_bp.route("/profile/delete", methods=["POST"])
 @login_required
 def delete_account():
-    return redirect(url_for(""))
+    # deleting an account is permanent, so make the user re-enter their password
+    if not current_user.check_password(request.form.get("password", "")):
+        flash("Incorrect password. Your account was not deleted.", "danger")
+        return redirect(url_for("auth.profile"))
+
+    user = current_user._get_current_object()
+    logout_user()
+    db.session.delete(user)  # their templates, workouts and sets are deleted too (cascade)
+    db.session.commit()
+
+    flash("Your account has been deleted.", "info")
+    return redirect(url_for("auth.login"))
