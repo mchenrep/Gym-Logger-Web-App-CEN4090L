@@ -18,5 +18,25 @@
     </form>
 </section>
 
+<section class="card">
+    <h2>Change password</h2>
+    <form method="POST" action="{{ url_for('auth.change_password') }}" class="stacked-form">
+        <label>Current password <input type="password" name="current_password" required></label>
+        <label>New password (8+ characters) <input type="password" name="new_password" required></label>
+        <label>Confirm new password <input type="password" name="confirm_password" required></label>
+        <button type="submit" class="btn btn-primary">Change password</button>
+    </form>
+</section>
+
+<section class="card danger-zone">
+    <h2>Delete account</h2>
+    <p>This permanently deletes your account, templates, and all logged workouts. It can't be undone.</p>
+    <form method="POST" action="{{ url_for('auth.delete_account') }}" class="stacked-form"
+          data-confirm="Permanently delete your account and all your workouts?">
+        <label>Confirm with your password <input type="password" name="password" required></label>
+        <button type="submit" class="btn btn-danger">Delete my account</button>
+    </form>
+</section>
+
 <p><a href="{{ url_for('auth.logout') }}" class="btn btn-secondary">Sign Out</a></p>
 {% endblock %}
