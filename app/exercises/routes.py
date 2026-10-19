@@ -1,7 +1,19 @@
-from flask import Blueprint, render_template, request
+"""
+INCREMENT 2 (owner: Mawi):
+  - detail() below is a bare-bones stub: it shows name / category / muscle group.
+    TODO: link to it from each card in library.html, then show THIS user's history
+    for the exercise (best set, recent sets) using analytics.exercise_history()
+    from app/workouts/analytics.py once John has built it.
+  - TODO: library.html uses `exercise.description`, but the Exercise model has no such
+    column. Either drop it from the template or add the column (tell the team first:
+    it needs a database reset).
+  - Tests live in tests/test_exercise_detail.py (Hector).
+"""
+from flask import Blueprint, render_template, request, abort
 from flask_login import login_required
 
-from app.models import Exercise  # noqa: F401  (you'll need this)
+from app import db
+from app.models import Exercise
 
 exercises_bp = Blueprint("exercises", __name__, url_prefix="/exercises")
 
@@ -65,3 +77,12 @@ def library():
         selected_category=category,
         selected_muscle_group=muscle_group
     )
+
+@exercises_bp.route("/<int:exercise_id>")
+@login_required
+def detail(exercise_id):
+    # STUB (Increment 2, Mawi): see the module docstring for the TODO list.
+    exercise = db.session.get(Exercise, exercise_id)
+    if exercise is None:
+        abort(404)
+    return render_template("exercises/detail.html", exercise=exercise)

@@ -1,3 +1,12 @@
+"""
+INCREMENT 2 (owner: John) - richer statistics ("EDA"):
+  - Put the number crunching in app/workouts/analytics.py (function stubs are there), keep
+    stats() below thin: call the helpers and pass the results to workouts/stats.html.
+  - The same helpers get reused by the dashboard (Matthew) and exercise detail page (Mawi),
+    so keep their signatures stable and make them take a user_id.
+  UNASSIGNED (stretch): delete a workout / delete a set. See GITHUB_ISSUES.md.
+"""
+
 import math
 
 from flask import Blueprint, render_template, request, redirect, url_for, flash
@@ -118,4 +127,7 @@ def add_set(workout_id):
 @login_required
 def stats():
     total_workouts = WorkoutSession.query.filter_by(user_id=current_user.id).count()
+    # TODO (John): replace the line above with analytics helpers, e.g.
+    #   total_volume, personal_records, workouts_per_week, sets_by_muscle_group, volume_per_workout
+    # and pass them to the template.
     return render_template('workouts/stats.html', total_workouts=total_workouts)
