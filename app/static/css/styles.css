@@ -399,3 +399,23 @@ fit the login, template, and workout forms during front-end styling (#26)
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 16px;
 }
+
+/*
+---- Shared Table CSS ----
+*/
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+}
+
+th {
+  color: var(--text-dim);
+  font-weight: 600;
+}
