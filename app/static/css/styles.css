@@ -11,7 +11,9 @@
     --blue: #1c7cf5;
     --blue-dim: rgba(28, 124, 245, 0.12);
     --blue-light: rgb(74, 154, 252); 
-    
+   
+    --primary-color: var(--blue);
+    --border-color: var(--card-border);
 }
 
 * {
