@@ -29,6 +29,7 @@ body {
 
 a {
   text-decoration: none; /* Removes default underline on links */
+  color: var(--blue);
 }
 
 /* 
