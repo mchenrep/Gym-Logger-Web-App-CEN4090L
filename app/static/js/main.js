@@ -1,5 +1,3 @@
-console.log("TEST: js/main.js is linked.");
-
 /* ---- Alert Fade Out ---- */
 function alertFadeOut() {
     // Find all success and info alert messages on the page
