@@ -32,6 +32,46 @@ a {
 }
 
 /* 
+----- Shared Navigation Bar CSS -----
+*/
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+
+  padding: 14px 20px;
+
+  background: var(--nav-bg);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.nav-brand {
+  color: var(--text);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nav-links a {
+  padding: 8px 10px;
+  color: var(--text-dim);
+  font-size: 14px;
+
+  border-radius: 6px;
+}
+
+.nav-links a:hover {
+  color: var(--primary-color);
+  background: var(--blue-dim);
+}
+
+/* 
 ----- Side Navigation Bar CSS ----- 
 */
 nav.side-nav {
