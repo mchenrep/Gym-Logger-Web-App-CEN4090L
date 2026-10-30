@@ -1,7 +1,7 @@
 console.log("TEST: js/main.js is linked.");
 
 /* ---- Alert Fade Out ---- */
-document.addEventListener("DOMContentLoaded", () => {
+function alertFadeOut() {
     // Find all success and info alert messages on the page
     const flashMessages = document.querySelectorAll(
         ".alert-success, .alert-info" // Danger/error are excluded so they stay visible
@@ -16,10 +16,10 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         }, 4000); // Wait 4 seconds before fading out
     });
-});
+}
 
 /* ---- Data Confirm Message ---- */
-document.addEventListener("DOMContentLoaded", () => {
+function dataConfirm() {
     // Find every form on the page that has a data-confirm attribute
     const confirmForms = document.querySelectorAll("form[data-confirm]");
 
@@ -35,4 +35,10 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     });
+}
+
+/* ---- Initialize JS Helpers ---- */
+document.addEventListener("DOMContentLoaded", () => {
+    alertFadeOut();
+    dataConfirm();
 });
