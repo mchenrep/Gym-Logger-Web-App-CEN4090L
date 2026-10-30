@@ -289,3 +289,62 @@ nav.side-nav .nav-item.is-current {
   color: var(--primary-color);
   border-color: var(--primary-color);
 }
+
+/*
+---- Shared Form CSS ----
+
+Note: Some selectors, like the :not, may be adjusted later
+with more specific CSS classes that can be added to the HTML to better 
+fit the login, template, and workout forms during front-end styling (#26) 
+*/
+.stacked-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.stacked-form label {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* Keeps checkbox and radio controls on the same line as their text
+ * insead of stacking them like the other form fields. */
+.stacked-form label:has(input[type="checkbox"]),
+.stacked-form label:has(input[type="radio"]) {
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Exclude checkboxes and radio buttons from standard input styling. */
+.stacked-form input:not([type="checkbox"]):not([type="radio"]),
+.stacked-form select,
+.stacked-form textarea {
+  background: #0f0f11;
+  color: var(--text);
+  padding: 9px 10px;
+  
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  
+  font: inherit;
+}
+
+.stacked-form input:not([type="checkbox"]):not([type="radio"]):focus,
+.stacked-form select:focus,
+.stacked-form textarea:focus {
+  border-color: var(--primary-color);
+  outline: none;
+}
+
+.stacked-form button,
+.stacked-form .btn {
+  align-self: flex-start;
+}
