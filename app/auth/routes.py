@@ -83,3 +83,77 @@ def logout():
 @login_required
 def profile():
     return render_template("auth/profile.html")
+
+@auth_bp.route("/profile/edit", methods=["POST"])
+@login_required
+def edit_profile():
+    username = request.form.get("username", "").strip()
+    email = request.form.get("email", "").strip().lower()
+
+    # input validation (a user may keep their own username/email, so exclude themselves from the duplicate checks)
+    error = None
+    if not username or not email:
+        error = "Username and email are required."
+    elif len(username) > 80:
+        error = "Username must be 80 characters or less."
+    elif "@" not in email:
+        error = "Please enter a valid email."
+    elif User.query.filter(User.username == username, User.id != current_user.id).first():
+        error = "That username is already taken."
+    elif User.query.filter(User.email == email, User.id != current_user.id).first():
+        error = "That email is already registered."
+
+    if error:
+        flash(error, "danger")
+        return redirect(url_for("auth.profile"))
+
+    current_user.username = username
+    current_user.email = email
+    db.session.commit()
+
+    flash("Profile updated.", "success") 
+    return redirect(url_for("auth.profile"))
+
+@auth_bp.route("/profile/password", methods=["POST"])
+@login_required
+def change_password():
+    current = request.form.get("current_password", "")
+    new = request.form.get("new_password", "")
+    confirm = request.form.get("confirm_password", "")
+
+    error = None
+    if not current_user.check_password(current):
+        error = "Your current password is incorrect."
+    elif len(new) < 8:
+        error = "New password must be at least 8 characters."
+    elif new != confirm:
+        error = "New passwords do not match."
+    elif new == current:
+        error = "New password must be different from your current one."
+
+    if error:
+        flash(error, "danger")
+        return redirect(url_for("auth.profile"))
+
+    current_user.set_password(new)
+    db.session.commit()
+
+    flash("Password changed.", "success")
+    return redirect(url_for("auth.profile"))
+
+
+@auth_bp.route("/profile/delete", methods=["POST"])
+@login_required
+def delete_account():
+    # deleting an account is permanent, so make the user re-enter their password
+    if not current_user.check_password(request.form.get("password", "")):
+        flash("Incorrect password. Your account was not deleted.", "danger")
+        return redirect(url_for("auth.profile"))
+
+    user = current_user._get_current_object()
+    logout_user()
+    db.session.delete(user)  # their templates, workouts and sets are deleted too (cascade)
+    db.session.commit()
+
+    flash("Your account has been deleted.", "info")
+    return redirect(url_for("auth.login"))
