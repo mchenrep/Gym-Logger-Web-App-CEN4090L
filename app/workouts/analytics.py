@@ -12,8 +12,6 @@ Reused by:
 Useful query shape: join SetEntry -> WorkoutSession and filter on WorkoutSession.user_id.
 Volume of a set = weight * reps.
 
-Delete the NotImplementedError lines as you implement each function; keep the signatures
-(and return shapes in the docstrings) stable so the other pages don't break.
 """
 from datetime import datetime, timedelta, timezone
 
