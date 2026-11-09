@@ -1,27 +1,46 @@
+
 {% extends "base.html" %}
 
-{% block title %}New Template - Gym Logger{% endblock %}
+{% block title %}{{ 'Edit ' ~ template.name if template else 'New Template' }} - Gym Logger{% endblock %}
 
 {% block content %}
 <div class="card">
-    <h2>Create a workout template</h2>
+    {% if template %}
+        <h2>Edit "{{ template.name }}"</h2>
+    {% else %}
+        <h2>Create a workout template</h2>
+    {% endif %}
+
     <form method="POST" class="stacked-form">
         <label>Template name <input type="text" name="name" value="{{ name }}" maxlength="120" placeholder="e.g. Push Day" required></label>
 
         <fieldset>
             <legend>Exercises</legend>
+            <p>Select your exercises and enter a number to set their order.</p>
+
             {% for exercise in exercises %}
                 <label>
                     <input type="checkbox" name="exercise_ids" value="{{ exercise.id }}" {% if exercise.id in selected_ids %}checked{% endif %}>
                     {{ exercise.name }} ({{ exercise.muscle_group }})
+                    <input type="number" name="order_{{ exercise.id }}" class="order-input" min="1" step="1" aria-label="Order for {{ exercise.name }}"
+                           value="{{ selected_ids.index(exercise.id) + 1 if exercise.id in selected_ids else '' }}">
                 </label>
             {% else %}
                 <p>No exercises found in database. Run <code>python seed.py</code> first.</p>
             {% endfor %}
         </fieldset>
 
-        <button type="submit">Create template</button>
+        {% if template %}
+            <button type="submit">Save changes</button>
+        {% else %}
+            <button type="submit">Create template</button>
+        {% endif %}
     </form>
-    <p><a href="{{ url_for('workout_templates.list_templates') }}">Back to my templates</a></p>
+
+    {% if template %}
+        <p><a href="{{ url_for('workout_templates.view_template', template_id=template.id) }}">Cancel</a></p>
+    {% else %}
+        <p><a href="{{ url_for('workout_templates.list_templates') }}">Back to my templates</a></p>
+    {% endif %}
 </div>
 {% endblock %}

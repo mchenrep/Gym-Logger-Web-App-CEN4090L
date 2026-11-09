@@ -23,14 +23,14 @@ Run the tests: `pytest`
 
 Each feature has its own folder, so we can all work at once without stepping on each other:
 
-| Folder | What it does | Status |
-|---|---|---|
-| `app/auth/` | register, login, logout, profile | DONE |
-| `app/models.py` | all database tables | DONE |
-| `app/templates/base.html` | shared layout + nav bar | DONE |
-| `app/exercises/` | exercise library page | DONE |
-| `app/workout_templates/` | create/view/delete workout templates | TODO |
-| `app/workouts/` | log a workout + workout history | TODO |
+| Folder | What it does |
+|---|---|
+| `app/auth/` | register, login, logout, profile |
+| `app/models.py` | all database tables | 
+| `app/templates/base.html` | shared layout + nav bar | 
+| `app/exercises/` | exercise library page | 
+| `app/workout_templates/` | create/view/delete workout templates | 
+| `app/workouts/` | log a workout + workout history |
 
 Open your feature's `routes.py`: the top of the file explains exactly what to build.
 Every page already loads, so you can start from a working app.
