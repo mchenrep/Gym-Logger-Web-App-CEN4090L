@@ -14,6 +14,7 @@ from flask_login import login_required, current_user
 
 from app import db
 from app.models import Exercise, WorkoutSession, WorkoutTemplate, SetEntry
+from app.workouts import analytics
 
 workouts_bp = Blueprint("workouts", __name__, url_prefix="/workouts")
 
@@ -126,8 +127,12 @@ def add_set(workout_id):
 @workouts_bp.route('/stats')
 @login_required
 def stats():
-    total_workouts = WorkoutSession.query.filter_by(user_id=current_user.id).count()
-    # TODO (John): replace the line above with analytics helpers, e.g.
-    #   total_volume, personal_records, workouts_per_week, sets_by_muscle_group, volume_per_workout
-    # and pass them to the template.
-    return render_template('workouts/stats.html', total_workouts=total_workouts)
+    user_id = current_user.id
+    return render_template(
+        'workouts/stats.html',
+        total_workouts=WorkoutSession.query.filter_by(user_id=user_id).count(),
+        total_volume=analytics.total_volume(user_id),
+        weekly_workouts=analytics.workouts_per_week(user_id),
+        muscle_group_sets=analytics.sets_by_muscle_group(user_id),
+        personal_records=analytics.personal_records(user_id),
+    )
