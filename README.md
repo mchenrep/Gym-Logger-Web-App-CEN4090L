@@ -24,7 +24,7 @@ Run the tests: `pytest`
 Each feature has its own folder, so we can all work at once without stepping on each other:
 
 | Folder | What it does |
-|---|---|---|
+|---|---|
 | `app/auth/` | register, login, logout, profile |
 | `app/models.py` | all database tables | 
 | `app/templates/base.html` | shared layout + nav bar | 
