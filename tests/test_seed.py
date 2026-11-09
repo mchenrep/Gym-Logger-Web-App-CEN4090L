@@ -2,6 +2,9 @@
 
 from app.models import Exercise
 
+from app import db
+from seed import seed_exercises
+
 
 def test_seed_contains_exercises(client):
     assert Exercise.query.count() > 0
@@ -47,3 +50,40 @@ def test_seed_contains_multiple_categories(client):
     assert "Bodyweight" in categories
     assert "Cable" in categories
     assert "Cardio" in categories
+
+
+# More seed tests - John
+
+
+def test_seed_adds_all_exercises(client):
+    seed_exercises()
+
+    assert Exercise.query.count() == 50
+
+
+def test_seed_updates_existing_exercises(client):
+    # Simulate an incorrect existing database record.
+    exercise = Exercise.query.filter_by(name="Lat Pulldown").first()
+
+    exercise.category = "Dumbbell"
+    db.session.commit()
+
+    seed_exercises()
+
+    exercise = Exercise.query.filter_by(name="Lat Pulldown").first()
+
+    assert exercise.category == "Cable"
+    assert exercise.muscle_group == "Back"
+
+
+def test_seed_is_safe_to_run_twice(client):
+    seed_exercises()
+
+    first_count = Exercise.query.count()
+
+    seed_exercises()
+
+    second_count = Exercise.query.count()
+
+    assert first_count == second_count
+    assert second_count == 50
