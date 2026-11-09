@@ -23,7 +23,7 @@ EXERCISES = [
     ("Overhead Press", "Barbell", "Shoulders"),
     ("Pull-Up", "Bodyweight", "Back"),
     ("Barbell Row", "Barbell", "Back"),
-    ("Lat Pulldown", "Dumbbell", "Back"),
+    ("Lat Pulldown", "Cable", "Back"),
     ("Dumbbell Curl", "Dumbbell", "Biceps"),
     ("Tricep Pushdown", "Cable", "Triceps"),
     ("Treadmill Run", "Cardio", "Full Body"),
