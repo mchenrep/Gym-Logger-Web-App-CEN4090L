@@ -420,3 +420,30 @@ th {
   color: var(--text-dim);
   font-weight: 600;
 }
+
+
+/*
+---- Button Row CSS ----
+*/
+.button-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 1rem;
+}
+
+.button-row form {
+  margin: 0;
+}
+
+/*
+---- Template Form CSS ----
+*/
+.stacked-form .order-input {
+  width: 4.5em;
+}
+
+.stacked-form label:not(:has(input[type="checkbox"]:checked)) .order-input {
+  display: none;
+}
