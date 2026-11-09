@@ -85,4 +85,4 @@ def detail(exercise_id):
     exercise = db.session.get(Exercise, exercise_id)
     if exercise is None:
         abort(404)
-    return render_template("exercises/detail.html", exercise=exercise)
+    return render_template("exercises/details.html", exercise=exercise)
