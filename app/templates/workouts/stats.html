@@ -5,9 +5,14 @@
 {% block content %}
 <h1>Workout Statistics</h1>
 
-{# INCREMENT 2 (John) - TODO: add a .card inside the grid below for each stat from
-   app/workouts/analytics.py: total volume, workouts per week (simple table or CSS bars is fine),
-   sets per muscle group, and a personal-records table. Reuse the "Total Sessions" card as the pattern. #}
+
+{% if total_workouts == 0 %}
+<div class="card">
+    <h3>No stats yet</h3>
+    <p>Log your first workout and your totals, weekly activity and personal records will show up here.</p>
+    <p><a href="{{ url_for('workouts.new_workout') }}" class="btn btn-primary">+ Start Workout</a></p>
+</div>
+{% else %}
 
 <div class="stats-grid">
     <div class="card">
@@ -16,5 +21,80 @@
             {{ total_workouts }}
         </p>
     </div>
+
+    <div class="card">
+        <h3>Total Volume</h3>
+        <p style="font-size: 2rem; font-weight: bold; color: var(--primary-color); margin: 0.5rem 0;">
+            {{ "{:,.0f}".format(total_volume) }} lbs
+        </p>
+        <p style="color: var(--text-dim); margin: 0;">Weight &times; reps, summed over every set.</p>
+    </div>
+
+    <div class="card">
+        <h3>Workouts per Week</h3>
+        {% set max_week = weekly_workouts|map(attribute=1)|max %}
+        <table>
+            <tbody>
+                {% for week_start, count in weekly_workouts %}
+                <tr>
+                    <td style="white-space: nowrap;">{{ week_start.strftime('%b %d') }}</td>
+                    <td style="width: 100%;">
+                        <div style="background: var(--primary-color); height: 0.9rem; border-radius: 4px; min-width: {{ '0' if count == 0 else '4px' }}; width: {{ (count / max_week * 100)|round|int if max_week else 0 }}%;"></div>
+                    </td>
+                    <td>{{ count }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <p style="color: var(--text-dim); margin: 0;">Last 8 weeks, weeks start on Monday.</p>
+    </div>
+
+    <div class="card">
+        <h3>Sets per Muscle Group</h3>
+        {% if muscle_group_sets %}
+        {% set max_sets = muscle_group_sets[0][1] %}
+        <table>
+            <tbody>
+                {% for group, count in muscle_group_sets %}
+                <tr>
+                    <td style="white-space: nowrap;">{{ group }}</td>
+                    <td style="width: 100%;">
+                        <div style="background: var(--primary-color); height: 0.9rem; border-radius: 4px; width: {{ (count / max_sets * 100)|round|int }}%;"></div>
+                    </td>
+                    <td>{{ count }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>No sets logged yet. Add sets to a workout to see your muscle group split.</p>
+        {% endif %}
+    </div>
 </div>
+
+<div class="card">
+    <h3>Personal Records</h3>
+    {% if personal_records %}
+    <p style="color: var(--text-dim);">Your heaviest set for each exercise (ties go to more reps).</p>
+    <table>
+        <thead>
+            <tr><th>Exercise</th><th>Weight (lbs)</th><th>Reps</th><th>Date</th></tr>
+        </thead>
+        <tbody>
+            {% for exercise, set_entry in personal_records %}
+            <tr>
+                <td>{{ exercise.name }}</td>
+                <td>{{ '%g'|format(set_entry.weight) }}</td>
+                <td>{{ set_entry.reps }}</td>
+                <td>{{ set_entry.session.date.strftime('%Y-%m-%d') }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>No sets logged yet. Your heaviest set for each exercise will show up here.</p>
+    {% endif %}
+</div>
+
+{% endif %}
 {% endblock %}
