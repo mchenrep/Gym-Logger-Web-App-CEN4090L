@@ -45,6 +45,8 @@ def test_duplicate_email(client):
             "confirm_password": "password123",
         },
     )
+    #make sure user logs out
+    client.get("/auth/logout")
 
     response = client.post(
         "/auth/register",

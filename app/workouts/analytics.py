@@ -15,13 +15,22 @@ Volume of a set = weight * reps.
 Delete the NotImplementedError lines as you implement each function; keep the signatures
 (and return shapes in the docstrings) stable so the other pages don't break.
 """
+from flask import session
+
 from app import db  # noqa: F401
 from app.models import Exercise, SetEntry, WorkoutSession  # noqa: F401
 
 
 def total_volume(user_id):
     """Total weight lifted ever (sum of weight * reps over all sets). Returns a float (0.0 if none)."""
-    raise NotImplementedError("TODO (John)")
+    sessions = WorkoutSession.query.filter_by(user_id=user_id).all()
+    session_ids = [s.id for s in sessions]
+    if not session_ids:
+        return 0.0
+
+    sets = SetEntry.query.filter(SetEntry.session_id.in_(session_ids)).all()
+
+    return sum(s.weight * s.reps for s in sets)
 
 
 def volume_per_workout(user_id):
