@@ -1,12 +1,5 @@
 """
 INCREMENT 2 (owner: Mawi):
-  - detail() below is a bare-bones stub: it shows name / category / muscle group.
-    TODO: link to it from each card in library.html, then show THIS user's history
-    for the exercise (best set, recent sets) using analytics.exercise_history()
-    from app/workouts/analytics.py once John has built it.
-  - TODO: library.html uses `exercise.description`, but the Exercise model has no such
-    column. Either drop it from the template or add the column (tell the team first:
-    it needs a database reset).
   - Tests live in tests/test_exercise_detail.py (Hector).
 """
 from flask import Blueprint, render_template, request, abort
@@ -82,11 +75,11 @@ def library():
 @exercises_bp.route("/<int:exercise_id>")
 @login_required
 def detail(exercise_id):
-    # STUB (Increment 2, Mawi): see the module docstring for the TODO list.
     exercise = db.session.get(Exercise, exercise_id)
     if exercise is None:
         abort(404)
 
+    # Display best set and recent set
     best_set = analytics.personal_record(current_user.id, exercise_id)
     recent_sets = analytics.exercise_history(current_user.id, exercise_id)
 
