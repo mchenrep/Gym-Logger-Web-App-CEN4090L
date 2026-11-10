@@ -106,7 +106,62 @@ def edit_template(template_id):
     # TODO 3: update template.name, then rebuild template.exercises with positions in the new order
     #         (clearing the list is fine: delete-orphan removes the old TemplateExercise rows).
     # TODO 4: flash a success message and redirect to view_template.
-    abort(501)
+    exercises = Exercise.query.order_by(Exercise.name).all()
+    if request.method == "GET":
+        selected_ids = [
+            item.exercise_id
+            for item in template.exercises
+        ]
+
+        return render_template(
+            "workout_templates/edit.html",
+            template=template,
+            exercises=exercises,
+            name=template.name,
+            selected_ids=selected_ids
+        )
+    name = request.form.get("name", "").strip()
+    # type=int drops anything that isn't a number; dict.fromkeys removes duplicates but keeps order
+    exercise_ids = list(dict.fromkeys(request.form.getlist("exercise_ids", type=int)))
+    # input validation
+    error = None
+    if not name:
+        error = "Please give your template a name."
+    elif len(name) > 120:
+        error = "Template name must be 120 characters or less."
+    elif not exercise_ids:
+        error = "Pick at least one exercise."
+
+    elif Exercise.query.filter(Exercise.id.in_(exercise_ids)).count() != len(exercise_ids):
+        error = "One of the chosen exercises doesn't exist."
+    elif WorkoutTemplate.query.filter_by(user_id=current_user.id, name=name).filter(WorkoutTemplate.id != template.id).first():
+        error = "You already have a template with that name."
+
+    if error:
+        flash(error, "danger")
+
+        return render_template(
+            "workout_templates/edit.html",
+            template=template,
+            exercises=exercises,
+            name=name,
+            selected_ids=exercise_ids
+        )
+    #update the template
+    template.name = name
+    #remake the exercise list
+    template.exercises.clear()
+    #recreate the list
+    for position, exercise_id in enumerate(exercise_ids):
+        template.exercises.append(TemplateExercise(
+            exercise_id=exercise_id,
+            position=position
+            ))
+    db.session.commit()
+
+    flash(f'Template "{name}" updated.', "success")
+    return redirect(url_for("workout_templates.view_template",template_id=template.id))
+
 
 
 @workout_templates_bp.route("/<int:template_id>/duplicate", methods=["POST"])
@@ -118,4 +173,4 @@ def duplicate_template(template_id):
     # TODO 2: create a new WorkoutTemplate for current_user with a TemplateExercise per original
     #         exercise, keeping the same positions. Do NOT copy workout sessions.
     # TODO 3: flash success and redirect to the new template's page.
-    abort(501)
+    
