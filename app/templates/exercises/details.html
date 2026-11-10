@@ -8,6 +8,9 @@
 <div class="page-header">
     <h1>{{ exercise.name }}</h1>
     <p>{{ exercise.category }} &middot; {{ exercise.muscle_group }}</p>
+    <a href="{{ url_for('workouts.new_workout', exercise_id=exercise.id) }}" class="btn btn-primary">
+        + Start a Workout With This Exercise
+    </a>
 </div>
 
 <section class="card">

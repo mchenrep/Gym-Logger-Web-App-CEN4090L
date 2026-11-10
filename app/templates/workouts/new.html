@@ -6,6 +6,10 @@
 <div class="card">
     <h2>Start a workout</h2>
     <form method="POST" class="stacked-form">
+        {# 27: keep the exercise id when the workout form is submitted #}
+        {% if exercise_id %}
+            <input type="hidden" name="exercise_id" value="{{ exercise_id }}">
+        {% endif %}
         <label>Template (optional)
             <select name="template_id">
                 <option value="">No template (empty workout)</option>

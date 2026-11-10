@@ -31,6 +31,12 @@ def history():
 @workouts_bp.route("/new", methods=["GET", "POST"])
 @login_required
 def new_workout():
+    # 27: get the exercise id if the workout was started from the exercise detail page
+    if request.method == "POST":
+        exercise_id = request.form.get("exercise_id", type=int)
+    else:
+        exercise_id = request.args.get("exercise_id", type=int)
+
     templates = (
         WorkoutTemplate.query.filter_by(user_id=current_user.id)
         .order_by(WorkoutTemplate.name)
@@ -46,16 +52,21 @@ def new_workout():
             template = WorkoutTemplate.query.filter_by(id=template_id, user_id=current_user.id).first()
             if template is None:
                 flash("That template doesn't exist.", "danger")
-                return render_template("workouts/new.html", templates=templates)
+                return render_template("workouts/new.html", templates=templates, exercise_id=exercise_id) # 27: add exercise id to render
 
         workout = WorkoutSession(user_id=current_user.id, template_id=template_id)
         db.session.add(workout)
         db.session.commit()
 
         flash("Workout started. Log your sets below.", "success")
-        return redirect(url_for("workouts.view_workout", workout_id=workout.id))
 
-    return render_template("workouts/new.html", templates=templates)
+        # 27: pass the exercise id to the workout page if one was selected from the exercise detail page
+        if exercise_id is not None:
+            return redirect(url_for("workouts.view_workout", workout_id=workout.id, exercise_id=exercise_id))
+        
+        return redirect(url_for("workouts.view_workout", workout_id=workout.id))
+    
+    return render_template("workouts/new.html", templates=templates, exercise_id=exercise_id) # 27: add exercise id to render
 
 @workouts_bp.route("/<int:workout_id>")
 @login_required
@@ -72,10 +83,16 @@ def view_workout(workout_id):
     # template checklist: an exercise counts as done once it has at least one set
     template_exercises = workout.template.exercises if workout.template else []
     done_ids = {set_entry.exercise_id for set_entry in workout.sets}
-
+    
+    # 27: use the exercise id from the detail page as the default exercise
+    requested_exercise_id = request.args.get("exercise_id", type=int)
+    
     # pre-fill the "add a set" form: repeat the last set, or start on the first unfinished template exercise
     last_set = workout.sets[-1] if workout.sets else None
-    if last_set:
+
+    if (requested_exercise_id is not None and db.session.get(Exercise, requested_exercise_id) is not None):
+        default_exercise_id = requested_exercise_id
+    elif last_set:
         default_exercise_id = last_set.exercise_id
     else:
         default_exercise_id = template_exercises[0].exercise_id if template_exercises else None
