@@ -11,13 +11,17 @@
         {% endfor %}
     </ol>
 
-    <div style="margin-top: 1.5rem;">
-        <form method="POST" action="{{ url_for('workouts.new_workout') }}" style="display: inline;">
+    <div class="button-row">
+        <form method="POST" action="{{ url_for('workouts.new_workout') }}">
             <input type="hidden" name="template_id" value="{{ template.id }}">
             <button type="submit" class="btn btn-primary">Start this workout</button>
         </form>
-        <form method="POST" action="{{ url_for('workout_templates.delete_template', template_id=template.id) }}" style="display: inline;"
-              onsubmit="return confirm('Delete this template? Workouts you already logged with it will be kept.');">
+        <a href="{{ url_for('workout_templates.edit_template', template_id=template.id) }}" class="btn btn-secondary">Edit</a>
+        <form method="POST" action="{{ url_for('workout_templates.duplicate_template', template_id=template.id) }}">
+            <button type="submit" class="btn btn-secondary">Duplicate</button>
+        </form>
+        <form method="POST" action="{{ url_for('workout_templates.delete_template', template_id=template.id) }}"
+              data-confirm="Delete this template? Workouts you already logged with it will be kept.">
             <button type="submit" class="btn btn-secondary">Delete template</button>
         </form>
     </div>

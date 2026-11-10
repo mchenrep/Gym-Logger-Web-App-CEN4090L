@@ -1,19 +1,48 @@
-"""
-INCREMENT 2 (owner: Richard) - the two stub routes at the bottom of this file:
-  - GET/POST /templates/<id>/edit       rename + add/remove/reorder exercises
-  - POST     /templates/<id>/duplicate  copy a template (name it "<name> (copy)")
-  Also: add Edit / Duplicate buttons to workout_templates/view.html (and list.html),
-  and add data-confirm="Delete this template?" to the delete form
-  (static/js/main.js already shows the browser confirm for it).
-  Tests live in tests/test_template_edit.py (Hector).
-"""
-from flask import Blueprint, render_template, request, redirect, url_for, flash, abort
+"""Routes for managing workout templates."""
+
+import math
+from itertools import count
+
+from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
 
 from app import db
 from app.models import Exercise, WorkoutTemplate, TemplateExercise, WorkoutSession
 
 workout_templates_bp = Blueprint("workout_templates", __name__, url_prefix="/templates")
+
+NAME_MAX_LENGTH = 120
+
+def _read_template_form(template_id=None):
+    """Validate the form data for creating or editing a template."""
+    name = request.form.get("name", "").strip()
+    exercise_ids = list(dict.fromkeys(request.form.getlist("exercise_ids", type=int)))
+    exercise_ids.sort(key=lambda exercise_id: request.form.get(f"order_{exercise_id}", type=int) or math.inf)
+
+    # input validation
+    error = None
+    if not name:
+        error = "Please give your template a name."
+    elif len(name) > NAME_MAX_LENGTH:
+        error = f"Template name must be {NAME_MAX_LENGTH} characters or less."
+    elif not exercise_ids:
+        error = "Pick at least one exercise."
+    elif Exercise.query.filter(Exercise.id.in_(exercise_ids)).count() != len(exercise_ids):
+        error = "One of the chosen exercises doesn't exist."
+    elif WorkoutTemplate.query.filter(
+        WorkoutTemplate.user_id == current_user.id,
+        WorkoutTemplate.name == name,
+        WorkoutTemplate.id != template_id,  # template's own name doesn't count when ediitng
+    ).first():
+        error = "You already have a template with that name."
+    return name, exercise_ids, error
+
+def _build_exercises(exercise_ids):
+    """Create template exercises in the selected order."""
+    return [
+        TemplateExercise(exercise_id=exercise_id, position=position)
+        for position, exercise_id in enumerate(exercise_ids)
+    ]
 
 
 @workout_templates_bp.route("/")
@@ -32,48 +61,29 @@ def list_templates():
 def new_template():
     exercises = Exercise.query.order_by(Exercise.name).all()
 
-    # if creating a template:
+    # if creating a template
     if request.method == "POST":
-        name = request.form.get("name", "").strip()
-        # type=int drops anything that isn't a number; dict.fromkeys removes duplicates but keeps order
-        exercise_ids = list(dict.fromkeys(request.form.getlist("exercise_ids", type=int)))
-
-        # input validation
-        error = None
-        if not name:
-            error = "Please give your template a name."
-        elif len(name) > 120:
-            error = "Template name must be 120 characters or less."
-        elif not exercise_ids:
-            error = "Pick at least one exercise."
-        elif Exercise.query.filter(Exercise.id.in_(exercise_ids)).count() != len(exercise_ids):
-            error = "One of the chosen exercises doesn't exist."
-        elif WorkoutTemplate.query.filter_by(user_id=current_user.id, name=name).first():
-            error = "You already have a template with that name."
-
+        name, exercise_ids, error = _read_template_form()
         if error:
             flash(error, "danger")
             return render_template(
-                "workout_templates/new.html", exercises=exercises, name=name, selected_ids=exercise_ids
+                "workout_templates/new.html", exercises=exercises, template=None, 
+                name=name, selected_ids=exercise_ids
             )
 
-        # create the template + one TemplateExercise per chosen exercise (position = its order in the list)
-        template = WorkoutTemplate(user_id=current_user.id, name=name)
-        for position, exercise_id in enumerate(exercise_ids):
-            template.exercises.append(TemplateExercise(exercise_id=exercise_id, position=position))
+        template = WorkoutTemplate(user_id=current_user.id, name=name, exercises=_build_exercises(exercise_ids))
         db.session.add(template)
         db.session.commit()
 
         flash(f'Template "{name}" created.', "success")
         return redirect(url_for("workout_templates.view_template", template_id=template.id))
 
-    return render_template("workout_templates/new.html", exercises=exercises, name="", selected_ids=[])
+    return render_template("workout_templates/new.html", exercises=exercises, template=None, name="", selected_ids=[])
 
 
 @workout_templates_bp.route("/<int:template_id>")
 @login_required
 def view_template(template_id):
-    # 404 if the template doesn't exist OR belongs to someone else
     template = WorkoutTemplate.query.filter_by(id=template_id, user_id=current_user.id).first_or_404()
     return render_template("workout_templates/view.html", template=template)
 
@@ -84,10 +94,9 @@ def delete_template(template_id):
     template = WorkoutTemplate.query.filter_by(id=template_id, user_id=current_user.id).first_or_404()
     name = template.name
 
-    # keep past workouts that used this template, just unlink them from it
     WorkoutSession.query.filter_by(template_id=template.id).update({"template_id": None})
 
-    db.session.delete(template)  # its TemplateExercise rows are deleted too (cascade)
+    db.session.delete(template)
     db.session.commit()
 
     flash(f'Template "{name}" deleted.', "info")
@@ -97,80 +106,53 @@ def delete_template(template_id):
 @workout_templates_bp.route("/<int:template_id>/edit", methods=["GET", "POST"])
 @login_required
 def edit_template(template_id):
-    # STUB (Increment 2, Richard). Ownership check is done for you; delete the abort(501) when you start.
-    template = WorkoutTemplate.query.filter_by(id=template_id, user_id=current_user.id).first_or_404()  # noqa: F841
-    # TODO 1: GET  -> render workout_templates/edit.html (copy new.html) pre-filled with the template's
-    #                 name and current exercise ids (see how new_template() passes selected_ids).
-    # TODO 2: POST -> reuse the same validation as new_template(), BUT allow keeping the template's
-    #                 own name (only reject a name used by a *different* template of this user).
-    # TODO 3: update template.name, then rebuild template.exercises with positions in the new order
-    #         (clearing the list is fine: delete-orphan removes the old TemplateExercise rows).
-    # TODO 4: flash a success message and redirect to view_template.
+    template = WorkoutTemplate.query.filter_by(id=template_id, user_id=current_user.id).first_or_404()
     exercises = Exercise.query.order_by(Exercise.name).all()
-    if request.method == "GET":
-        selected_ids = [
-            item.exercise_id
-            for item in template.exercises
-        ]
 
-        return render_template(
-            "workout_templates/edit.html",
-            template=template,
-            exercises=exercises,
-            name=template.name,
-            selected_ids=selected_ids
-        )
-    name = request.form.get("name", "").strip()
-    # type=int drops anything that isn't a number; dict.fromkeys removes duplicates but keeps order
-    exercise_ids = list(dict.fromkeys(request.form.getlist("exercise_ids", type=int)))
-    # input validation
-    error = None
-    if not name:
-        error = "Please give your template a name."
-    elif len(name) > 120:
-        error = "Template name must be 120 characters or less."
-    elif not exercise_ids:
-        error = "Pick at least one exercise."
+    # if saving changes
+    if request.method == "POST":
+        name, exercise_ids, error = _read_template_form(template.id)
+        if error:
+            flash(error, "danger")
+            return render_template(
+                "workout_templates/new.html", exercises=exercises, template=template, name=name, selected_ids=exercise_ids
+            )
 
-    elif Exercise.query.filter(Exercise.id.in_(exercise_ids)).count() != len(exercise_ids):
-        error = "One of the chosen exercises doesn't exist."
-    elif WorkoutTemplate.query.filter_by(user_id=current_user.id, name=name).filter(WorkoutTemplate.id != template.id).first():
-        error = "You already have a template with that name."
+        template.name = name
+        template.exercises = _build_exercises(exercise_ids)
+        db.session.commit()
 
-    if error:
-        flash(error, "danger")
+        flash(f'Template "{name}" updated.', "success")
+        return redirect(url_for("workout_templates.view_template", template_id=template.id))
 
-        return render_template(
-            "workout_templates/edit.html",
-            template=template,
-            exercises=exercises,
-            name=name,
-            selected_ids=exercise_ids
-        )
-    #update the template
-    template.name = name
-    #remake the exercise list
-    template.exercises.clear()
-    #recreate the list
-    for position, exercise_id in enumerate(exercise_ids):
-        template.exercises.append(TemplateExercise(
-            exercise_id=exercise_id,
-            position=position
-            ))
-    db.session.commit()
-
-    flash(f'Template "{name}" updated.', "success")
-    return redirect(url_for("workout_templates.view_template",template_id=template.id))
-
+    return render_template(
+        "workout_templates/new.html", exercises=exercises, template=template,
+        name=template.name, selected_ids=[item.exercise_id for item in template.exercises],
+    )
 
 
 @workout_templates_bp.route("/<int:template_id>/duplicate", methods=["POST"])
 @login_required
 def duplicate_template(template_id):
-    # STUB (Increment 2, Richard).
-    template = WorkoutTemplate.query.filter_by(id=template_id, user_id=current_user.id).first_or_404()  # noqa: F841
-    # TODO 1: pick a free name: "<name> (copy)", then "<name> (copy 2)", ... (names are unique per user).
-    # TODO 2: create a new WorkoutTemplate for current_user with a TemplateExercise per original
-    #         exercise, keeping the same positions. Do NOT copy workout sessions.
-    # TODO 3: flash success and redirect to the new template's page.
-    
+    template = WorkoutTemplate.query.filter_by(id=template_id, user_id=current_user.id).first_or_404()
+
+    taken = {
+        name for (name,) in
+        WorkoutTemplate.query.filter_by(user_id=current_user.id).with_entities(WorkoutTemplate.name)
+    }
+    for number in count(1):
+        suffix = " (copy)" if number == 1 else f" (copy {number})"
+        copy_name = template.name[:NAME_MAX_LENGTH - len(suffix)] + suffix  # stay within the name column's limit
+        if copy_name not in taken:
+            break
+
+    # same exercises in the same order, past workout sessions aren't copied
+    duplicate = WorkoutTemplate(
+        user_id=current_user.id, name=copy_name,
+        exercises=_build_exercises(item.exercise_id for item in template.exercises),
+    )
+    db.session.add(duplicate)
+    db.session.commit()
+
+    flash(f'Template "{template.name}" duplicated as "{copy_name}".', "success")
+    return redirect(url_for("workout_templates.view_template", template_id=duplicate.id))
