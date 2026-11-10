@@ -52,10 +52,11 @@
 <div class="exercise-grid">
     {% for exercise in exercises %}
         <div class="card exercise-card">
-            <h3>{{ exercise.name }}</h3>
+            <h3>
+                <a href="{{ url_for('exercises.detail', exercise_id=exercise.id) }}">{{ exercise.name }}</a>
+            </h3>
             <p><strong>Category:</strong> {{ exercise.category }}</p>
             <p><strong>Muscle group:</strong> {{ exercise.muscle_group }}</p>
-            <p><strong>Description:</strong> {{ exercise.description or 'No description available.' }}</p>
         </div>
     {% else %}
         <p>No exercises found in database.</p>
