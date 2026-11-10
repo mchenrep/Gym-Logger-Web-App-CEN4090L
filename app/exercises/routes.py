@@ -78,14 +78,4 @@ def detail(exercise_id):
     exercise = db.session.get(Exercise, exercise_id)
     if exercise is None:
         abort(404)
-
-    # Display best set and recent set
-    best_set = analytics.personal_record(current_user.id, exercise_id)
-    recent_sets = analytics.exercise_history(current_user.id, exercise_id)
-
-    return render_template(
-        "exercises/details.html", 
-        exercise=exercise,
-        best_set=best_set,
-        recent_sets=recent_sets
-    )
+    return render_template("exercises/details.html", exercise=exercise)
