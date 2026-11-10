@@ -3,16 +3,51 @@
 {% block title %}{{ exercise.name }} - Gym Logger{% endblock %}
 
 {% block content %}
-{# STUB (Increment 2, Mawi). TODO: your history + personal record for this exercise
-   (analytics.exercise_history / personal_record), shortcuts like "Start a workout", nicer layout. #}
 <div class="page-header">
     <h1>{{ exercise.name }}</h1>
     <p>{{ exercise.category }} &middot; {{ exercise.muscle_group }}</p>
+    <a href="{{ url_for('workouts.new_workout', exercise_id=exercise.id) }}" class="btn btn-primary">
+        + Start a Workout With This Exercise
+    </a>
 </div>
 
 <section class="card">
-    <h2>Your history</h2>
-    <p>Coming soon.</p>
+    <h2>Personal Record</h2>
+
+    {% if best_set %}
+        <p><strong>Weight:</strong> {{best_set.weight }}</p>
+        <p><strong>Reps:</strong> {{ best_set.reps }}</p>
+    {% else %}
+        <p>No personal record yet.</p>
+    {% endif %}
+</section>
+
+<section class="card">
+    <h2>Recent Sets</h2>
+    {% if recent_sets %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Weight</th>
+                    <th>Reps</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for session, set_entry in recent_sets %}
+                    <tr>
+                        <td>{{ session.date.strftime("%b %d, %Y") }}</td>
+                        <td>{{ set_entry.weight }}</td>
+                        <td>{{ set_entry.reps }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        {% else %}
+            <p>No sets logged for this exercise yet.</p>
+        {% endif %}
 </section>
 
 <p><a href="{{ url_for('exercises.library') }}">Back to the exercise library</a></p>
