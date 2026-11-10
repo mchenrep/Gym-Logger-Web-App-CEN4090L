@@ -10,10 +10,11 @@ INCREMENT 2 (owner: Mawi):
   - Tests live in tests/test_exercise_detail.py (Hector).
 """
 from flask import Blueprint, render_template, request, abort
-from flask_login import login_required
+from flask_login import login_required, current_user
 
 from app import db
 from app.models import Exercise
+from app.workouts import analytics
 
 exercises_bp = Blueprint("exercises", __name__, url_prefix="/exercises")
 
@@ -85,4 +86,13 @@ def detail(exercise_id):
     exercise = db.session.get(Exercise, exercise_id)
     if exercise is None:
         abort(404)
-    return render_template("exercises/details.html", exercise=exercise)
+
+    best_set = analytics.personal_record(current_user.id, exercise_id)
+    recent_sets = analytics.exercise_history(current_user.id, exercise_id)
+
+    return render_template(
+        "exercises/details.html", 
+        exercise=exercise,
+        best_set=best_set,
+        recent_sets=recent_sets
+    )
