@@ -23,6 +23,20 @@
     {% endif %}
 </div>
 
+{% if current_user.is_authenticated and guest_set_count %}
+<div class="alert alert-info">
+    <p>You have an unsaved guest workout ({{ guest_set_count }} set{{ '' if guest_set_count == 1 else 's' }}) from before you logged in. Save it to your account?</p>
+    <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+        <form method="POST" action="{{ url_for('guest.save') }}">
+            <button type="submit">Save to my account</button>
+        </form>
+        <form method="POST" action="{{ url_for('guest.discard') }}" data-confirm="Discard the guest workout?">
+            <button type="submit" class="btn btn-secondary">Discard it</button>
+        </form>
+    </div>
+</div>
+{% endif %}
+
 {% if current_user.is_authenticated %}
 <div class="dashboard-grid">
     <section class="card">

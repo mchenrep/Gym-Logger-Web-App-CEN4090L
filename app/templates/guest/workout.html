@@ -44,6 +44,8 @@
             across {{ summary.exercise_count }} exercise{{ '' if summary.exercise_count == 1 else 's' }}
             &middot; total volume {{ '{:,.0f}'.format(summary.total_volume) }} lbs
         </p>
+        <p>Want to keep it? <a href="{{ url_for('auth.register') }}">Sign up</a> or
+           <a href="{{ url_for('auth.login') }}">log in</a>, and you'll be offered the chance to save this workout to your account.</p>
     </section>
 {% else %}
     <section class="card">
