@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, abort
-from flask_login import login_required, current_user
+from flask_login import current_user
 
 from app import db
 from app.models import Exercise
@@ -9,8 +9,7 @@ exercises_bp = Blueprint("exercises", __name__, url_prefix="/exercises")
 
 
 @exercises_bp.route("/")
-@login_required
-def library():
+def library():  # public: guests can browse the library too
     # get the search query and filters from the URL
     q = request.args.get("q", "").strip()
     category = request.args.get("category", "").strip()

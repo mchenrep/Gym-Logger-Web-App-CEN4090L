@@ -1,15 +1,14 @@
 from conftest import make_user, login, exercise_id
 
 
-def test_detail_requires_login(client):
+def test_detail_is_public(client):
     bench_id = exercise_id("Barbell Bench Press")
 
     response = client.get(
         f"/exercises/{bench_id}"
     )
 
-    assert response.status_code == 302
-    assert "/auth/login" in response.headers["Location"]
+    assert response.status_code == 200
 
 
 def test_detail_page_loads(client):
