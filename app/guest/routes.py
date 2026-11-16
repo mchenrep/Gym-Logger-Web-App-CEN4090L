@@ -13,18 +13,21 @@ Routes:
     POST /guest/workout/sets     log a set
     POST /guest/workout/finish   finish the workout (shows the summary)
     POST /guest/workout/discard  throw the workout away
+    POST /guest/workout/save     (logged in) copy the guest workout into the user's account
 """
-
+from datetime import datetime
 from functools import wraps
 
 from flask import Blueprint, render_template, request, redirect, url_for, flash
-from flask_login import current_user
+from flask_login import current_user, login_required
 
+from app import db
 from app.guest import store
-from app.models import Exercise
+from app.models import Exercise, SetEntry, WorkoutSession
 from app.workouts.validation import validate_set
 
 guest_bp = Blueprint("guest", __name__, url_prefix="/guest")
+
 
 def guests_only(view):
     """Logged-in users already have their workouts saved, so send them to the normal pages."""
@@ -37,6 +40,7 @@ def guests_only(view):
         return view(*args, **kwargs)
 
     return wrapper
+
 
 @guest_bp.route("/workout")
 @guests_only
@@ -119,3 +123,42 @@ def discard():
     store.clear_workout()
     flash("Guest workout discarded.", "info")
     return redirect(url_for("index") if current_user.is_authenticated else url_for("guest.workout"))
+
+
+@guest_bp.route("/workout/save", methods=["POST"])
+@login_required
+def save():
+    """
+        Only  place guest data reaches the database, and only when a logged in user asks for it.
+        A guest who signs up or logs in keeps their workout in the cookie, and the dashboard offers this.
+    """
+    workout = store.get_workout()
+    if workout is None or not workout["sets"]:
+        flash("There is no guest workout to save.", "info")
+        return redirect(url_for("index"))
+
+    # only keep sets whose exercise is (still) in the library
+    exercise_ids = {exercise_id for exercise_id, _, _ in workout["sets"]}
+    known_ids = {exercise.id for exercise in Exercise.query.filter(Exercise.id.in_(exercise_ids)).all()}
+    sets = [entry for entry in workout["sets"] if entry[0] in known_ids]
+    if not sets:
+        store.clear_workout()
+        flash("None of the exercises in that guest workout exist anymore, so it wasn't saved.", "danger")
+        return redirect(url_for("index"))
+
+    saved = WorkoutSession(user_id=current_user.id, date=datetime.fromisoformat(workout["started_at"]))
+    db.session.add(saved)
+    db.session.flush()  # gives `saved` its id so the sets can point at it
+
+    set_numbers = {}  # exercise id -> how many sets of it are saved so far
+    for exercise_id, weight, reps in sets:
+        set_numbers[exercise_id] = set_numbers.get(exercise_id, 0) + 1
+        db.session.add(SetEntry(
+            session_id=saved.id, exercise_id=exercise_id, set_number=set_numbers[exercise_id],
+            weight=weight, reps=reps,
+        ))
+    db.session.commit()
+
+    store.clear_workout()
+    flash("Guest workout saved to your account.", "success")
+    return redirect(url_for("workouts.view_workout", workout_id=saved.id))

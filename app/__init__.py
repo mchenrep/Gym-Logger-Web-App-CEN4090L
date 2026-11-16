@@ -32,6 +32,7 @@ def create_app(test_config=None):
     @app.route("/")
     def index():
         # Dashboard: the logged-in user's 5 most recent workouts (empty for visitors).
+        from app.guest import store as guest_store
         from app.models import WorkoutSession
 
         recent_workouts = []
@@ -42,7 +43,10 @@ def create_app(test_config=None):
                 .limit(5)
                 .all()
             )
-        return render_template("index.html", recent_workouts=recent_workouts)
+        # a guest workout that is still in the browser from before the user logged in
+        # (the dashboard offers to save it to their account)
+        guest_set_count = guest_store.set_count() if current_user.is_authenticated else 0
+        return render_template("index.html", recent_workouts=recent_workouts, guest_set_count=guest_set_count)
 
     # Custom error pages
     def render_error(code, title, message):
