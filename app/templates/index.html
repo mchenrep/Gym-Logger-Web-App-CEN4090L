@@ -4,12 +4,23 @@
 
 {% block content %}
 <div class="dashboard-header card">
-    <h1>Welcome Back{% if current_user.is_authenticated %}, {{ current_user.username }}{% endif %}!</h1>
-    <p>Track your progress and log today's workout.</p>
-    <div style="margin-top: 1rem;">
-        <a href="{{ url_for('workouts.new_workout') }}" class="btn btn-primary">+ Start Workout</a>
-        <a href="{{ url_for('exercises.library') }}" class="btn btn-secondary">Browse Exercises</a>
-    </div>
+    {% if current_user.is_authenticated %}
+        <h1>Welcome Back, {{ current_user.username }}!</h1>
+        <p>Track your progress and log today's workout.</p>
+        <div style="margin-top: 1rem;">
+            <a href="{{ url_for('workouts.new_workout') }}" class="btn btn-primary">+ Start Workout</a>
+            <a href="{{ url_for('exercises.library') }}" class="btn btn-secondary">Browse Exercises</a>
+        </div>
+    {% else %}
+        <h1>Welcome to Gym Logger</h1>
+        <p>Log your workouts, build templates, and track your progress. Try it out without an account, or sign up to save everything.</p>
+        <div style="margin-top: 1rem;">
+            <a href="{{ url_for('guest.workout') }}" class="btn btn-primary">Try a Workout (no account)</a>
+            <a href="{{ url_for('exercises.library') }}" class="btn btn-secondary">Browse Exercises</a>
+            <a href="{{ url_for('auth.register') }}" class="btn btn-secondary">Sign Up</a>
+            <a href="{{ url_for('auth.login') }}" class="btn btn-secondary">Log In</a>
+        </div>
+    {% endif %}
 </div>
 
 {% if current_user.is_authenticated %}
