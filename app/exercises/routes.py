@@ -1,7 +1,3 @@
-"""
-INCREMENT 2 (owner: Mawi):
-  - Tests live in tests/test_exercise_detail.py (Hector).
-"""
 from flask import Blueprint, render_template, request, abort
 from flask_login import login_required, current_user
 
@@ -73,8 +69,7 @@ def library():
     )
 
 @exercises_bp.route("/<int:exercise_id>")
-@login_required
-def detail(exercise_id):
+def detail(exercise_id):  # public. NOTE: anything user-specific here must check current_user.is_authenticated
     exercise = db.session.get(Exercise, exercise_id)
     if exercise is None:
         abort(404)
