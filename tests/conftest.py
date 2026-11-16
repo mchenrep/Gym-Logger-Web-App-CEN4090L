@@ -1,6 +1,5 @@
 """Shared test setup: a fresh in-memory database for every test, plus helpers to log in."""
 import pytest
-from pandas.core.indexes import category
 
 from app import create_app, db
 from app.models import User, Exercise
