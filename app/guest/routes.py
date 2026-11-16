@@ -1,3 +1,20 @@
+"""
+GUEST WORKOUTS: someone who isn't logged in can start a workout, log sets, and see a
+summary of the finished workout. Nothing is saved to the database. It all lives in the
+browser's session cookie (see app/guest/store.py) and goes away when the browser is closed.
+
+Guests can NOT: save a workout permanently, use templates, keep notes, or see stats/history.
+Those pages stay @login_required. Guest code never imports or writes to the workout tables,
+so a guest can't reach them even by accident.
+
+Routes:
+    GET  /guest/workout          the guest workout page (start button, active workout or summary)
+    POST /guest/start            start a guest workout
+    POST /guest/workout/sets     log a set
+    POST /guest/workout/finish   finish the workout (shows the summary)
+    POST /guest/workout/discard  throw the workout away
+"""
+
 from functools import wraps
 
 from flask import Blueprint, render_template, request, redirect, url_for, flash

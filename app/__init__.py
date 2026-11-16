@@ -21,11 +21,13 @@ def create_app(test_config=None):
     from app.exercises.routes import exercises_bp
     from app.workout_templates.routes import workout_templates_bp
     from app.workouts.routes import workouts_bp
+    from app.guest.routes import guest_bp
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(exercises_bp)
     app.register_blueprint(workout_templates_bp)
     app.register_blueprint(workouts_bp)
+    app.register_blueprint(guest_bp)
 
     @app.route("/")
     def index():

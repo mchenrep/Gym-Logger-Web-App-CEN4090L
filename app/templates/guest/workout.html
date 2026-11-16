@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block title %}Guest Workout - Gym Logger{% endblock %}
+
+{% block content %}
+
+{# ---------- 1. no guest workout yet: explain guest mode and offer to start one ---------- #}
+{% if not summary %}
+<div class="card">
+    <h2>Try a workout without an account</h2>
+    <p>Start a guest workout, log your sets, and see a summary when you finish.</p>
+    <p><strong>Guest workouts aren't saved.</strong> Everything stays in this browser and disappears when you close it.
+       Create an account to save workouts, build templates, and see your stats.</p>
+    <form method="POST" action="{{ url_for('guest.start') }}" class="stacked-form">
+        {% if requested_exercise_id %}
+            <input type="hidden" name="exercise_id" value="{{ requested_exercise_id }}">
+        {% endif %}
+        <button type="submit">Start guest workout</button>
+    </form>
+    <p style="margin-top: 1rem;">
+        <a href="{{ url_for('auth.register') }}">Sign up</a> or
+        <a href="{{ url_for('auth.login') }}">log in</a> &middot;
+        <a href="{{ url_for('exercises.library') }}">Browse exercises</a>
+    </p>
+</div>
+
+{# ---------- 2 + 3. there is a guest workout (in progress or finished) ---------- #}
+{% else %}
+<div class="page-header">
+    <h1>Guest workout</h1>
+    <p>{{ summary.started_at.strftime('%Y-%m-%d') }}</p>
+</div>
+
+<div class="alert alert-info">
+    Guest mode: this workout is only stored in your browser and disappears when you close it.
+    <a href="{{ url_for('auth.register') }}">Create an account</a> to save your workouts.
+</div>
+
+{% if summary.finished %}
+    <section class="card">
+        <h2>Workout summary</h2>
+        <p>
+            {{ summary.total_sets }} set{{ '' if summary.total_sets == 1 else 's' }}
+            across {{ summary.exercise_count }} exercise{{ '' if summary.exercise_count == 1 else 's' }}
+            &middot; total volume {{ '{:,.0f}'.format(summary.total_volume) }} lbs
+        </p>
+    </section>
+{% else %}
+    <section class="card">
+        <h2>Log a set</h2>
+        <form method="POST" action="{{ url_for('guest.add_set') }}" class="stacked-form">
+            <label>Exercise
+                <select name="exercise_id" required>
+                    {% for exercise in exercises %}
+                        <option value="{{ exercise.id }}" {% if exercise.id == default_exercise_id %}selected{% endif %}>{{ exercise.name }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+            <label>Weight (lbs) <input type="number" name="weight" min="0" max="{{ max_weight }}" step="any" value="{{ '%g'|format(summary.last_set.weight) if summary.last_set else '' }}" required></label>
+            <label>Reps <input type="number" name="reps" min="1" max="{{ max_reps }}" step="1" value="{{ summary.last_set.reps if summary.last_set else '' }}" required></label>
+            <button type="submit">Add set</button>
+        </form>
+        <p>Guest workouts can have up to {{ max_sets }} sets.</p>
+    </section>
+{% endif %}
+
+<section class="card">
+    <h2>Sets</h2>
+    {% for group in summary.groups %}
+        <h3>{{ group.exercise.name }}</h3>
+        <table>
+            <thead>
+                <tr><th>Set</th><th>Weight (lbs)</th><th>Reps</th></tr>
+            </thead>
+            <tbody>
+                {% for set_entry in group.sets %}
+                    <tr><td>{{ set_entry.number }}</td><td>{{ '%g'|format(set_entry.weight) }}</td><td>{{ set_entry.reps }}</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No sets logged yet.</p>
+    {% endfor %}
+</section>
+
+<div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem;">
+    {% if summary.finished %}
+        <form method="POST" action="{{ url_for('guest.start') }}">
+            <button type="submit">Start a new guest workout</button>
+        </form>
+        <a href="{{ url_for('auth.register') }}" class="btn btn-secondary">Sign up</a>
+        <a href="{{ url_for('auth.login') }}" class="btn btn-secondary">Log in</a>
+    {% else %}
+        <form method="POST" action="{{ url_for('guest.finish') }}">
+            <button type="submit">Finish workout</button>
+        </form>
+    {% endif %}
+    <form method="POST" action="{{ url_for('guest.discard') }}" data-confirm="Discard this guest workout?">
+        <button type="submit" class="btn btn-secondary">Discard</button>
+    </form>
+</div>
+
+<p><a href="{{ url_for('exercises.library') }}">Browse the exercise library</a></p>
+{% endif %}
+{% endblock %}
