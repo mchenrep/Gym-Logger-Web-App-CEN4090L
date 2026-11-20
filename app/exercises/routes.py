@@ -1,9 +1,5 @@
-"""
-INCREMENT 2 (owner: Mawi):
-  - Tests live in tests/test_exercise_detail.py (Hector).
-"""
 from flask import Blueprint, render_template, request, abort
-from flask_login import login_required, current_user
+from flask_login import current_user
 
 from app import db
 from app.models import Exercise
@@ -13,8 +9,7 @@ exercises_bp = Blueprint("exercises", __name__, url_prefix="/exercises")
 
 
 @exercises_bp.route("/")
-@login_required
-def library():
+def library():  # public: guests can browse the library too
     # get the search query and filters from the URL
     q = request.args.get("q", "").strip()
     category = request.args.get("category", "").strip()
@@ -73,8 +68,7 @@ def library():
     )
 
 @exercises_bp.route("/<int:exercise_id>")
-@login_required
-def detail(exercise_id):
+def detail(exercise_id):  # public. NOTE: anything user-specific here must check current_user.is_authenticated
     exercise = db.session.get(Exercise, exercise_id)
     if exercise is None:
         abort(404)

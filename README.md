@@ -35,6 +35,22 @@ Each feature has its own folder, so we can all work at once without stepping on 
 Open your feature's `routes.py`: the top of the file explains exactly what to build.
 Every page already loads, so you can start from a working app.
 
+## Guest users
+
+People who aren't logged in can browse the exercise library, start a workout, log sets, and see a
+summary of the finished workout. **Nothing is saved to the database.** The workout lives in the
+browser's session cookie (`app/guest/store.py`) and is gone when the browser is closed.
+
+- Guests can't use templates, history, stats, or notes. Those pages stay `@login_required`.
+- If a guest signs up or logs in before closing the browser, the dashboard offers to save the workout
+  to their account. That "Save to my account" button is the only place guest data reaches the database.
+- Limits live at the top of `app/guest/store.py` (60 sets, weight up to 5000 lbs, reps up to 1000) so the
+  cookie stays small. Browsers drop cookies bigger than about 4 KB.
+- The exercise library and exercise detail pages are public. If you add something user-specific to them,
+  check `current_user.is_authenticated` first, because a guest has no `current_user.id`.
+- Guest workouts are stored in a signed cookie, so a deployed site needs a real `SECRET_KEY`
+  (set it as an environment variable). The default in `config.py` is for development only.
+
 ## Git workflow
 
 1. Make an issue for the task.

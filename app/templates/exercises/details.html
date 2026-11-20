@@ -6,11 +6,19 @@
 <div class="page-header">
     <h1>{{ exercise.name }}</h1>
     <p>{{ exercise.category }} &middot; {{ exercise.muscle_group }}</p>
-    <a href="{{ url_for('workouts.new_workout', exercise_id=exercise.id) }}" class="btn btn-primary">
+    {# logged-in users start a saved workout, guests start a guest workout (nothing saved) #}
+    {% set start_url = url_for('workouts.new_workout', exercise_id=exercise.id) if current_user.is_authenticated else url_for('guest.workout', exercise_id=exercise.id) %}
+    <a href="{{ start_url }}" class="btn btn-primary">
         + Start a Workout With This Exercise
     </a>
 </div>
 
+{% if not current_user.is_authenticated %}
+<section class="card">
+    <h2>Your history</h2>
+    <p><a href="{{ url_for('auth.login') }}">Log in</a> or <a href="{{ url_for('auth.register') }}">sign up</a> to see your personal record and recent sets for this exercise.</p>
+</section>
+{% else %}
 <section class="card">
     <h2>Personal Record</h2>
 
@@ -49,6 +57,7 @@
             <p>No sets logged for this exercise yet.</p>
         {% endif %}
 </section>
+{% endif %}
 
 <p><a href="{{ url_for('exercises.library') }}">Back to the exercise library</a></p>
 {% endblock %}

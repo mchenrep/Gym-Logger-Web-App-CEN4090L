@@ -1,10 +1,9 @@
 from conftest import make_user, login
-#test 1login required
-def test_library_requires_login(client):
+#test 1 the library is public (guests can browse it without logging in)
+def test_library_is_public(client):
     response = client.get("/exercises/")
 
-    assert response.status_code == 302
-    assert "/auth/login" in response.headers["Location"]
+    assert response.status_code == 200
 
 
 #test 2 library loads or logged-in user
